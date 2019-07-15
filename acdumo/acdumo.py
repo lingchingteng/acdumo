@@ -24,7 +24,8 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def get_cookie_crumb()
+def get_cookie_crumb():
+    pass
 
 
 def get_yahoo_finance_data(
