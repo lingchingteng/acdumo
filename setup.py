@@ -18,5 +18,10 @@ setuptools.setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
     ],
-    entry_points = {'console_scripts': ['acdumo=acdumo.acdumo:main']}
+    entry_points = {
+        'console_scripts': [
+            'acdumo=acdumo.acdumo:main',
+            'acdumo-install-certifi=actumo.install_certifi:main'
+        ]
+    }
 )
