@@ -5,8 +5,9 @@
 # Imports ======================================================================
 
 from argparse import ArgumentParser
-from datetime import datetime
+from datetime import datetime, timedelta
 from urllib.request import urlopen
+from yahoofinancials import YahooFinancials
 
 
 
@@ -19,42 +20,25 @@ TICKERS = ('SPY', 'TLT', 'VSS', 'SCZ')
 
 # Functions ====================================================================
 
+def download_data(*tickers):
+    today = datetime.today()
+    yahoo_financials = YahooFinancials(tickers)
+    return yahoo_financials.get_historical_price_data(
+        (today - timedelta(days=186)).strftime('%Y-%m-%d'),
+        today.strftime('%Y-%m-%d'),
+        'monthly'
+    )
+    
+
+
 def parse_arguments():
     parser = ArgumentParser(description='Accelerated dual momentum')
     return parser.parse_args()
 
 
-def get_cookie_crumb():
-    pass
-
-
-def get_yahoo_finance_data(
-    stock_ticker: str,
-    cookie: str,
-    crumb: str,
-    start_date: str = '1929-03-08',
-    end_date: str = datetime.now().strftime('%Y-%m-%d'),
-    frequency: str = 'd'
-):
-    ticker_url = ''.join(
-        (
-            'https://query1.finance.yahoo.com/v7/finance/download/',
-            stock_ticker,
-            '?period1=', start_date,
-            '&period2=', end_date,
-            '&interval=', frequency,
-            '&events=history',
-            '&crumb=', crumb
-        )
-    )
-    with urlopen(ticker_url) as response:
-        return response.read().decode()
-
-
 def main():
     parse_arguments()
-    result_from_yahoo = get_yahoo_finance_data('SPY')
-    print(result_from_yahoo)
+
 
 if __name__ == '__main__':
     main()
