@@ -4,9 +4,11 @@
 
 # Imports ======================================================================
 
+import pandas as pd
+import statistics
+
 from argparse import ArgumentParser
 from datetime import datetime, timedelta
-from urllib.request import urlopen
 from yahoofinancials import YahooFinancials
 
 
@@ -20,24 +22,49 @@ TICKERS = ('SPY', 'TLT', 'VSS', 'SCZ')
 
 # Functions ====================================================================
 
-def download_data(*tickers):
+def download_historical_price_data(*tickers):
     today = datetime.today()
     yahoo_financials = YahooFinancials(tickers)
-    return yahoo_financials.get_historical_price_data(
+    historical_price_data = yahoo_financials.get_historical_price_data(
         (today - timedelta(days=186)).strftime('%Y-%m-%d'),
         today.strftime('%Y-%m-%d'),
-        'monthly'
+        'weekly'
     )
-    
+    yield from (
+        pd.DataFrame(historical_price_data[ticker]['prices'][::-1])
+        for ticker in tickers
+    )
+
+
+def compute_signal(df):
+    current_month_price = statistics.mean(
+        p for p in df['adjclose'][:4] if not pd.isnull(p)
+    )
+    return sum(
+        current_month_price / statistics.mean(
+            p for p in df['adjclose'][x:x+4] if not pd.isnull(p)
+        )
+        for x in (4, 12, 24)
+    )
 
 
 def parse_arguments():
     parser = ArgumentParser(description='Accelerated dual momentum')
+    parser.add_argument(
+        '--tickers',
+        nargs=4,
+        default=TICKERS,
+        help='list of four tickers'
+    )
     return parser.parse_args()
 
 
 def main():
-    parse_arguments()
+    args = parse_arguments()
+    spy, tlt, vss, scz = download_historical_price_data(*args.tickers)
+    for ticker, df in zip(args.tickers, (spy, tlt, vss, scz)):
+        print(f'{ticker}:{compute_signal(df)}')
+
 
 
 if __name__ == '__main__':
