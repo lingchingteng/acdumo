@@ -50,16 +50,18 @@ def compute_signal(df):
     )
 
 
-def signals_dict(date, *tickers):
-    return dict(
-        zip(
-            tickers,
-            (
-                compute_signal(df)
-                for df in download_historical_price_data(date, *tickers)
-            )
+def compute_signals(date, *tickers):
+    yield from zip(
+        tickers,
+        (
+            compute_signal(df)
+            for df in download_historical_price_data(date, *tickers)
         )
     )
+
+
+def signals_dict(date, *tickers):
+    return dict(compute_signals(date, *tickers))
 
 
 def decide_strategy(signals: dict, bonds: str = BONDS):
