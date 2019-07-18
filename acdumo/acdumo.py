@@ -48,6 +48,19 @@ def compute_signal(df):
     )
 
 
+def decide_strategy(spy_signal, global_small_stocks_signal):
+    if spy_signal > global_small_stocks_signal:
+        if spy_signal > 0:
+            return 'Buy/Hold S&P 500'
+        else:
+            return 'Buy/Hold Long-Term Treasuries'
+    else:
+        if global_small_stocks_signal > 0:
+            return 'Buy/Hold Global Small Stocks'
+        else:
+            return 'Buy/Hold Long-Term Treasuries'
+
+
 def parse_arguments():
     parser = ArgumentParser(description='Accelerated dual momentum')
     parser.add_argument(
@@ -62,8 +75,11 @@ def parse_arguments():
 def main():
     args = parse_arguments()
     spy, tlt, vss, scz = download_historical_price_data(*args.tickers)
+    print('\nSIGNALS\n-------')
     for ticker, df in zip(args.tickers, (spy, tlt, vss, scz)):
-        print(f'{ticker}:{compute_signal(df)}')
+        print(f'{ticker}: {compute_signal(df)}')
+    print('\nSTRATEGY\n-------')
+    print(decide_strategy(compute_signal(spy), compute_signal(vss)))
 
 
 
