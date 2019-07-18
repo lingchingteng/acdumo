@@ -134,7 +134,7 @@ def main():
         for ticker, signal in signals.items():
             print(f'{ticker}: {signal}')
         print('\nSTRATEGY\n--------')
-        print(strategy)
+        print(strategy, '\n')
 
 
 
