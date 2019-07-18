@@ -20,6 +20,7 @@ TICKERS = ('SPY', 'TLT', 'VSS', 'SCZ')
 
 
 
+
 # Functions ====================================================================
 
 def download_historical_price_data(*tickers):
@@ -80,7 +81,6 @@ def main():
         print(f'{ticker}: {compute_signal(df)}')
     print('\nSTRATEGY\n-------')
     print(decide_strategy(compute_signal(spy), compute_signal(vss)))
-
 
 
 if __name__ == '__main__':
