@@ -17,7 +17,7 @@ from yahoofinancials import YahooFinancials
 
 # Constants ====================================================================
 
-TICKERS = ('SPY', 'VSS', 'SCZ', 'TLT')
+TICKERS = ('SPY', 'TLT', 'VSS', 'SCZ')
 BONDS = 'TLT'
 
 
@@ -62,11 +62,12 @@ def signals_dict(date, *tickers):
     )
 
 
-def decide_strategy(signals: dict):
-    if any(s > 0 for s in signals.values()):
-        choice = max(signals.items(), key=itemgetter(1))[0]
+def decide_strategy(signals: dict, bonds: str = BONDS):
+    signals_sans_bonds = dict((t, s) for t, s in signals.items() if t != bonds)
+    if any(s > 0 for s in signals_sans_bonds.values()):
+        choice = max(signals_sans_bonds.items(), key=itemgetter(1))[0]
     else:
-        choice = BONDS
+        choice = bonds
     return f'Buy/Hold {choice}'
 
 
@@ -85,6 +86,12 @@ def parse_arguments():
         default=TICKERS,
         help=f"tickers to use (default: {' '.join(TICKERS)})"
     )
+    parser.add_argument(
+        '--bonds',
+        metavar='<TIC>',
+        default=BONDS,
+        help=f"ticker representing bonds (default: {BONDS})"
+    )
     return parser.parse_args()
 
 
@@ -102,7 +109,7 @@ def main():
     for ticker, signal in signals.items():
         print(f'{ticker}: {signal}')
     print('\nSTRATEGY\n-------')
-    print(decide_strategy(signals))
+    print(decide_strategy(signals, bonds=args.bonds))
 
 
 if __name__ == '__main__':
