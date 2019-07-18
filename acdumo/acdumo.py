@@ -4,6 +4,7 @@
 
 # Imports ======================================================================
 
+import json
 import pandas as pd
 import statistics
 
@@ -73,6 +74,18 @@ def decide_strategy(signals: dict, bonds: str = BONDS):
     return f'Buy/Hold {choice}'
 
 
+def report_dict(date, signals: dict, strategy: str):
+    return {
+        'date': date.strftime('%Y-%m-%d'),
+        'signals': signals,
+        'strategy': strategy
+    }
+
+
+def emit_json(report: dict, indent=None):
+    print(json.dumps(report, indent=indent), end='')
+
+
 def parse_arguments():
     parser = ArgumentParser(description='Accelerated dual momentum')
     parser.add_argument(
@@ -94,6 +107,11 @@ def parse_arguments():
         default=BONDS,
         help=f"ticker representing bonds (default: {BONDS})"
     )
+    parser.add_argument(
+        '--json',
+        action='store_true',
+        help='write JSON to stdout'
+    )
     return parser.parse_args()
 
 
@@ -105,14 +123,23 @@ def main():
             "I can't predict the future! Choose an earlier date."
         )
     signals = signals_dict(date, *args.tickers)
-    print('\nDATE\n----')
-    print(args.date)
-    print('\nSIGNALS\n-------')
-    for ticker, signal in signals.items():
-        print(f'{ticker}: {signal}')
-    print('\nSTRATEGY\n-------')
-    print(decide_strategy(signals, bonds=args.bonds))
+    strategy = decide_strategy(signals, bonds=args.bonds)
+    if args.json:
+        report = report_dict(date, signals, strategy)
+        emit_json(report)
+    else:
+        print('\nDATE\n----')
+        print(args.date)
+        print('\nSIGNALS\n-------')
+        for ticker, signal in signals.items():
+            print(f'{ticker}: {signal}')
+        print('\nSTRATEGY\n--------')
+        print(strategy)
 
+
+
+
+# Execute ======================================================================
 
 if __name__ == '__main__':
     main()
