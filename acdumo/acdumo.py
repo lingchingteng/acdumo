@@ -9,6 +9,7 @@ import statistics
 
 from argparse import ArgumentParser
 from datetime import datetime, timedelta
+from operator import itemgetter
 from yahoofinancials import YahooFinancials
 
 
@@ -16,19 +17,19 @@ from yahoofinancials import YahooFinancials
 
 # Constants ====================================================================
 
-TICKERS = ('SPY', 'TLT', 'VSS', 'SCZ')
+TICKERS = ('SPY', 'VSS', 'SCZ', 'TLT')
+BONDS = 'TLT'
 
 
 
 
 # Functions ====================================================================
 
-def download_historical_price_data(*tickers):
-    today = datetime.today()
+def download_historical_price_data(date, *tickers):
     yahoo_financials = YahooFinancials(tickers)
     historical_price_data = yahoo_financials.get_historical_price_data(
-        (today - timedelta(days=186)).strftime('%Y-%m-%d'),
-        today.strftime('%Y-%m-%d'),
+        (date - timedelta(days=186)).strftime('%Y-%m-%d'),
+        date.strftime('%Y-%m-%d'),
         'weekly'
     )
     yield from (
@@ -39,48 +40,69 @@ def download_historical_price_data(*tickers):
 
 def compute_signal(df):
     current_month_price = statistics.mean(
-        p for p in df['adjclose'][:4] if not pd.isnull(p)
+        p for p in df.adjclose[:4] if not pd.isnull(p)
     )
     return sum(
-        current_month_price / statistics.mean(
-            p for p in df['adjclose'][x:x+4] if not pd.isnull(p)
-        )
+        current_month_price
+        / statistics.mean(p for p in df.adjclose[x:x+4] if not pd.isnull(p))
+        -1
         for x in (4, 12, 24)
     )
 
 
-def decide_strategy(spy_signal, global_small_stocks_signal):
-    if spy_signal > global_small_stocks_signal:
-        if spy_signal > 0:
-            return 'Buy/Hold S&P 500'
-        else:
-            return 'Buy/Hold Long-Term Treasuries'
+def signals_dict(date, *tickers):
+    return dict(
+        zip(
+            tickers,
+            (
+                compute_signal(df)
+                for df in download_historical_price_data(date, *tickers)
+            )
+        )
+    )
+
+
+def decide_strategy(signals: dict):
+    if any(s > 0 for s in signals.values()):
+        choice = max(signals.items(), key=itemgetter(1))[0]
     else:
-        if global_small_stocks_signal > 0:
-            return 'Buy/Hold Global Small Stocks'
-        else:
-            return 'Buy/Hold Long-Term Treasuries'
+        choice = BONDS
+    return f'Buy/Hold {choice}'
 
 
 def parse_arguments():
     parser = ArgumentParser(description='Accelerated dual momentum')
     parser.add_argument(
+        '--date',
+        metavar='<yyyy-mm-dd>',
+        default=datetime.today().strftime('%Y-%m-%d'),
+        help=f'date of interest (default: today)'
+    )
+    parser.add_argument(
         '--tickers',
-        nargs=4,
+        metavar='<TIC>',
+        nargs='+',
         default=TICKERS,
-        help='list of four tickers'
+        help=f"tickers to use (default: {' '.join(TICKERS)})"
     )
     return parser.parse_args()
 
 
 def main():
     args = parse_arguments()
-    spy, tlt, vss, scz = download_historical_price_data(*args.tickers)
+    date = datetime.strptime(args.date, '%Y-%m-%d')
+    if date > datetime.today():
+        raise RuntimeError(
+            "I can't predict the future! Choose an earlier date."
+        )
+    signals = signals_dict(date, *args.tickers)
+    print('\nDATE\n----')
+    print(args.date)
     print('\nSIGNALS\n-------')
-    for ticker, df in zip(args.tickers, (spy, tlt, vss, scz)):
-        print(f'{ticker}: {compute_signal(df)}')
+    for ticker, signal in signals.items():
+        print(f'{ticker}: {signal}')
     print('\nSTRATEGY\n-------')
-    print(decide_strategy(compute_signal(spy), compute_signal(vss)))
+    print(decide_strategy(signals))
 
 
 if __name__ == '__main__':
