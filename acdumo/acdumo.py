@@ -78,7 +78,7 @@ def plot_prices(historical_price_data, file_name):
         data=hpd
     )
     ax.set_xlabel('')
-    ax.set_ylabel(f'Price relative to {hpd.formatted_date.iloc[-1]}')
+    ax.set_ylabel(f'adjclose relative to {hpd.formatted_date.iloc[-1]}')
     ax.set_xticklabels(labels=hpd.formatted_date[::-1], rotation=30)
     if len(ax.get_xticklabels()) > 7:
         for ind, label in enumerate(ax.get_xticklabels()):
