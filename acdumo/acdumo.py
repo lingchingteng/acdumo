@@ -46,7 +46,7 @@ Strategy
 
 # Functions ====================================================================
 
-def download_historical_price_data(date, *tickers, freq='monthly'):
+def download_historical_price_data(date, *tickers, freq: str = 'monthly'):
     yahoo_financials = YahooFinancials(tickers)
     if freq == 'monthly':
         days = 217
@@ -60,12 +60,12 @@ def download_historical_price_data(date, *tickers, freq='monthly'):
     return {
         ticker: pd.DataFrame(
             historical_price_data[ticker]['prices'][::-1]
-        ).dropna()
+        ).drop(0).reset_index().dropna()
         for ticker in tickers
     }
 
 
-def plot_prices(historical_price_data, file_name):
+def plot_prices(historical_price_data: dict, file_name: str):
     hpd = pd.concat(
         df.assign(
             normalized_adjclose=df.adjclose / df.adjclose.iloc[-1],
@@ -90,10 +90,10 @@ def plot_prices(historical_price_data, file_name):
                 label.set_visible(False)
     fig = ax.get_figure()
     fig.tight_layout()
-    fig.savefig(file_name, format=file_name.split('.')[-1])
+    fig.savefig(file_name, format='svg')
 
 
-def compute_signal(df, freq='monthly'):
+def compute_signal(df, freq: str = 'monthly'):
     if freq == 'monthly':
         return sum(df.adjclose[0] / df.adjclose[x] - 1 for x in (1, 3, 6))
     elif freq == 'weekly':
@@ -104,7 +104,7 @@ def compute_signal(df, freq='monthly'):
         )
 
 
-def compute_signals(historical_price_data, freq='monthly'):
+def compute_signals(historical_price_data: dict, freq: str = 'monthly'):
     return {
         ticker: compute_signal(df, freq=freq)
         for ticker, df in historical_price_data.items()
@@ -174,6 +174,7 @@ def main():
     historical_price_data = download_historical_price_data(
         date, *args.tickers, freq=args.frequency
     )
+    print(historical_price_data)
     signals = compute_signals(historical_price_data, freq=args.frequency)
     strategy = decide_strategy(signals, bonds=args.bonds)
     report_text = generate_report(date, signals, strategy)
