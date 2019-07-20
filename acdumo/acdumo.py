@@ -88,8 +88,13 @@ def plot_prices(historical_price_data, file_name):
         )
         for ticker, df in historical_price_data.items()
     )
-    ax = sns.lineplot(x='date', y='normalized_adjclose', hue='ticker', data=hpd)
-    ax.set_xticklabels(labels=hpd.formatted_date, rotation=30)
+    ax = sns.lineplot(x='formatted_date', y='normalized_adjclose', hue='ticker', data=hpd)
+    ax.set_xticklabels(labels=hpd.formatted_date[::-1], rotation=30)
+    for ind, label in enumerate(ax.get_xticklabels()):
+        if ind % 4 == 0:
+            label.set_visible(True)
+        else:
+            label.set_visible(False)
     fig = ax.get_figure()
     fig.tight_layout()
     fig.savefig(file_name, format=file_name.split('.')[-1])
@@ -127,6 +132,12 @@ def emit_json(report: dict, indent=None):
 def parse_arguments():
     parser = ArgumentParser(description='Accelerated dual momentum')
     parser.add_argument(
+        'report',
+        metavar='<path/to/report/dir/>',
+        nargs='?',
+        help='write a HTML report'
+    )
+    parser.add_argument(
         '--date',
         metavar='<yyyy-mm-dd>',
         default=datetime.today().strftime('%Y-%m-%d'),
@@ -149,11 +160,6 @@ def parse_arguments():
         '--json',
         action='store_true',
         help='write JSON to stdout'
-    )
-    parser.add_argument(
-        '--report',
-        metavar='<path/to/report/dir/>',
-        help='write a HTML report'
     )
     return parser.parse_args()
 
