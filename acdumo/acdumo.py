@@ -20,7 +20,7 @@ from yahoofinancials import YahooFinancials
 
 # Constants ====================================================================
 
-TICKERS = ('SPY', 'TLT', 'VSS', 'SCZ')
+TICKERS = ['SPY', 'TLT', 'VSS', 'SCZ']
 BONDS = 'TLT'
 REPORT = """Date
 ====
@@ -48,10 +48,12 @@ Strategy
 
 def download_historical_price_data(date, *tickers, freq='monthly'):
     yahoo_financials = YahooFinancials(tickers)
+    if freq == 'monthly':
+        days = 217
+    elif freq == 'weekly':
+        days = 186
     historical_price_data = yahoo_financials.get_historical_price_data(
-        (date - timedelta(days={'monthly': 217, 'weekly': 186}[freq])).strftime(
-            '%Y-%m-%d'
-        ),
+        (date - timedelta(days=days)).strftime('%Y-%m-%d'),
         date.strftime('%Y-%m-%d'),
         freq
     )
