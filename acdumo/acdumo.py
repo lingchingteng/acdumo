@@ -46,36 +46,37 @@ Strategy
 
 # Functions ====================================================================
 
-def download_historical_price_data(date, *tickers):
+def download_historical_price_data(date, *tickers, freq='monthly'):
     yahoo_financials = YahooFinancials(tickers)
     historical_price_data = yahoo_financials.get_historical_price_data(
-        (date - timedelta(days=186)).strftime('%Y-%m-%d'),
+        (date - timedelta(days=217)).strftime('%Y-%m-%d'),
         date.strftime('%Y-%m-%d'),
-        'weekly'
+        freq
     )
     return {
         ticker: pd.DataFrame(historical_price_data[ticker]['prices'][::-1])[[
             'adjclose', 'date', 'formatted_date'
-        ]]
+        ]].dropna()
         for ticker in tickers
     }
 
 
-def compute_signal(df):
-    current_month_price = statistics.mean(
-        p for p in df.adjclose[:4] if not pd.isnull(p)
-    )
+def compute_signal(df, freq='monthly'):
+    current_month_price = {
+        'monthly': df.adjclose[0],
+        'weekly': statistics.mean(df.adjclose[:4])
+    }[freq]
     return sum(
         current_month_price
         / statistics.mean(p for p in df.adjclose[x:x+4] if not pd.isnull(p))
         -1
-        for x in (4, 12, 24)
+        for x in {'monthly': (1, 3, 6), 'weekly:': (4, 12, 24)}[freq]
     )
 
 
-def compute_signals(historical_price_data):
+def compute_signals(historical_price_data, freq='monthly'):
     return {
-        ticker: compute_signal(df)
+        ticker: compute_signal(df, freq=freq)
         for ticker, df in historical_price_data.items()
     }
 
@@ -84,7 +85,7 @@ def plot_prices(historical_price_data, file_name):
     hpd = pd.concat(
         df.assign(
             ticker=[ticker] * len(df.index),
-            normalized_adjclose=df.adjclose / df.adjclose.iloc[-1]
+            normalized_adjclose=df.adjclose / df.adjclose.iloc[-3]
         )
         for ticker, df in historical_price_data.items()
     )
@@ -95,12 +96,14 @@ def plot_prices(historical_price_data, file_name):
         data=hpd
     )
     ax.set_xlabel('')
+    ax.set_ylabel(f'Price relative to {hpd.formatted_date.iloc[-1]}')
     ax.set_xticklabels(labels=hpd.formatted_date[::-1], rotation=30)
-    for ind, label in enumerate(ax.get_xticklabels()):
-        if ind % 4 == 0:
-            label.set_visible(True)
-        else:
-            label.set_visible(False)
+    if len(ax.get_xticklabels()) > 7:
+        for ind, label in enumerate(ax.get_xticklabels()):
+            if ind % 4 == 0:
+                label.set_visible(True)
+            else:
+                label.set_visible(False)
     fig = ax.get_figure()
     fig.tight_layout()
     fig.savefig(file_name, format=file_name.split('.')[-1])
@@ -167,6 +170,12 @@ def parse_arguments():
         action='store_true',
         help='write JSON to stdout'
     )
+    parser.add_argument(
+        '--frequency',
+        choices=('monthly', 'weekly'),
+        default='monthly',
+        help='frequency of data to fetch (default: monthly)'
+    )
     return parser.parse_args()
 
 
@@ -177,8 +186,12 @@ def main():
         raise RuntimeError(
             "I can't predict the future! Choose an earlier date."
         )
-    historical_price_data = download_historical_price_data(date, *args.tickers)
-    signals = compute_signals(historical_price_data)
+    historical_price_data = download_historical_price_data(
+        date,
+        *args.tickers,
+        freq=args.frequency
+    )
+    signals = compute_signals(historical_price_data, freq=args.frequency)
     strategy = decide_strategy(signals, bonds=args.bonds)
     if args.report:
         report = report_md(date, signals, strategy)
