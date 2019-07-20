@@ -5,8 +5,8 @@
 # Imports ======================================================================
 
 import json
+import misaka as m
 import pandas as pd
-import pypandoc
 import statistics
 
 from argparse import ArgumentParser
@@ -21,15 +21,18 @@ from yahoofinancials import YahooFinancials
 
 TICKERS = ('SPY', 'TLT', 'VSS', 'SCZ')
 BONDS = 'TLT'
-REPORT = """# Date
+REPORT = """Date
+====
 {}
 
-# Signals
+Signals
+=======
 | Ticker | Signal |
 | ------ | ------ |
 {}
 
-# Strategy
+Strategy
+========
 {}
 """
 
@@ -131,9 +134,9 @@ def parse_arguments():
         help='write JSON to stdout'
     )
     parser.add_argument(
-        '--pdf',
-        metavar='<path/to/output.pdf>',
-        help='write a PDF report'
+        '--report',
+        metavar='<path/to/report/dir/>',
+        help='write a HTML report'
     )
     return parser.parse_args()
 

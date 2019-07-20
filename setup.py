@@ -18,7 +18,7 @@ setuptools.setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
     ],
-    install_requires = ['pandas', 'pypandoc', 'yahoofinancials'],
+    install_requires = ['misaka', 'pandas', 'yahoofinancials'],
     entry_points = {
         'console_scripts': [
             'acdumo=acdumo.acdumo:main',
