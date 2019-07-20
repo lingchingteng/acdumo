@@ -20,7 +20,17 @@ from yahoofinancials import YahooFinancials
 
 TICKERS = ('SPY', 'TLT', 'VSS', 'SCZ')
 BONDS = 'TLT'
+REPORT = """# Date
+{}
 
+# Signals
+| Ticker | Signal |
+| ------ | ------ |
+{}
+
+# Strategy
+{}
+"""
 
 
 
@@ -81,6 +91,13 @@ def report_dict(date, signals: dict, strategy: str):
         'strategy': strategy
     }
 
+def report_md(date, signals: dict, strategy: str):
+    return REPORT.format(
+        date.strftime('%Y-%m-%d'),
+        '\n'.join(f'|    {t} | {s:.4f} |' for t, s in signals.items()),
+        strategy
+    )
+
 
 def emit_json(report: dict, indent=None):
     print(json.dumps(report, indent=indent), end='')
@@ -128,13 +145,8 @@ def main():
         report = report_dict(date, signals, strategy)
         emit_json(report)
     else:
-        print('\nDATE\n----')
-        print(args.date)
-        print('\nSIGNALS\n-------')
-        for ticker, signal in signals.items():
-            print(f'{ticker}: {signal}')
-        print('\nSTRATEGY\n--------')
-        print(strategy, '\n')
+        report = report_md(date, signals, strategy)
+        print(report, end='')
 
 
 
