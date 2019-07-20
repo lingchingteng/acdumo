@@ -4,7 +4,6 @@
 
 # Imports ======================================================================
 
-import json
 import misaka as m
 import os
 import pandas as pd
@@ -49,7 +48,9 @@ Strategy
 def download_historical_price_data(date, *tickers, freq='monthly'):
     yahoo_financials = YahooFinancials(tickers)
     historical_price_data = yahoo_financials.get_historical_price_data(
-        (date - timedelta(days=217)).strftime('%Y-%m-%d'),
+        (date - timedelta(days={'monthly': 217, 'weekly': 186}[freq])).strftime(
+            '%Y-%m-%d'
+        ),
         date.strftime('%Y-%m-%d'),
         freq
     )
@@ -58,26 +59,6 @@ def download_historical_price_data(date, *tickers, freq='monthly'):
             'adjclose', 'date', 'formatted_date'
         ]].dropna()
         for ticker in tickers
-    }
-
-
-def compute_signal(df, freq='monthly'):
-    current_month_price = {
-        'monthly': df.adjclose[0],
-        'weekly': statistics.mean(df.adjclose[:4])
-    }[freq]
-    return sum(
-        current_month_price
-        / statistics.mean(p for p in df.adjclose[x:x+4] if not pd.isnull(p))
-        -1
-        for x in {'monthly': (1, 3, 6), 'weekly:': (4, 12, 24)}[freq]
-    )
-
-
-def compute_signals(historical_price_data, freq='monthly'):
-    return {
-        ticker: compute_signal(df, freq=freq)
-        for ticker, df in historical_price_data.items()
     }
 
 
@@ -109,6 +90,24 @@ def plot_prices(historical_price_data, file_name):
     fig.savefig(file_name, format=file_name.split('.')[-1])
 
 
+def compute_signal(df, freq='monthly'):
+    current_month_price = {
+        'monthly': df.adjclose[0],
+        'weekly': statistics.mean(df.adjclose[:4])
+    }[freq]
+    return sum(
+        current_month_price / statistics.mean(df.adjclose[x:x+4]) - 1
+        for x in {'monthly': (1, 3, 6), 'weekly': (4, 12, 24)}[freq]
+    )
+
+
+def compute_signals(historical_price_data, freq='monthly'):
+    return {
+        ticker: compute_signal(df, freq=freq)
+        for ticker, df in historical_price_data.items()
+    }
+
+
 def decide_strategy(signals: dict, bonds: str = BONDS):
     signals_sans_bonds = dict((t, s) for t, s in signals.items() if t != bonds)
     if any(s > 0 for s in signals_sans_bonds.values()):
@@ -118,24 +117,12 @@ def decide_strategy(signals: dict, bonds: str = BONDS):
     return f'Buy/Hold {choice}'
 
 
-def report_dict(date, signals: dict, strategy: str):
-    return {
-        'date': date.strftime('%Y-%m-%d'),
-        'signals': signals,
-        'strategy': strategy
-    }
-
-
 def report_md(date, signals: dict, strategy: str):
     return REPORT.format(
         date.strftime('%Y-%m-%d'),
         '\n'.join(f'|    {t} | {s:.4f} |' for t, s in signals.items()),
         strategy
     )
-
-
-def emit_json(report: dict, indent=None):
-    print(json.dumps(report, indent=indent), end='')
 
 
 def parse_arguments():
@@ -166,11 +153,6 @@ def parse_arguments():
         help=f"ticker representing bonds (default: {BONDS})"
     )
     parser.add_argument(
-        '--json',
-        action='store_true',
-        help='write JSON to stdout'
-    )
-    parser.add_argument(
         '--frequency',
         choices=('monthly', 'weekly'),
         default='monthly',
@@ -193,8 +175,9 @@ def main():
     )
     signals = compute_signals(historical_price_data, freq=args.frequency)
     strategy = decide_strategy(signals, bonds=args.bonds)
+    report = report_md(date, signals, strategy)
+    print(report, end='')
     if args.report:
-        report = report_md(date, signals, strategy)
         if not os.path.isdir(args.report):
             os.mkdir(args.report)
         plot_prices(
@@ -203,12 +186,6 @@ def main():
         )
         with open(os.path.join(args.report, 'acdumo.html'), 'w') as f:
             f.write(m.html(report, extensions=['tables']))
-    if args.json:
-        report = report_dict(date, signals, strategy)
-        emit_json(report)
-    else:
-        report = report_md(date, signals, strategy)
-        print(report, end='')
 
 
 
