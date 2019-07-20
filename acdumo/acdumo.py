@@ -85,7 +85,7 @@ def plot_prices(historical_price_data, file_name):
     hpd = pd.concat(
         df.assign(
             ticker=[ticker] * len(df.index),
-            normalized_adjclose=df.adjclose / df.adjclose.iloc[-3]
+            normalized_adjclose=df.adjclose / df.adjclose.iloc[-1]
         )
         for ticker, df in historical_price_data.items()
     )
