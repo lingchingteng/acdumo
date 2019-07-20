@@ -6,6 +6,7 @@
 
 import json
 import pandas as pd
+import pypandoc
 import statistics
 
 from argparse import ArgumentParser
@@ -129,6 +130,11 @@ def parse_arguments():
         action='store_true',
         help='write JSON to stdout'
     )
+    parser.add_argument(
+        '--pdf',
+        metavar='<path/to/output.pdf>',
+        help='write a PDF report'
+    )
     return parser.parse_args()
 
 
@@ -141,6 +147,9 @@ def main():
         )
     signals = signals_dict(date, *args.tickers)
     strategy = decide_strategy(signals, bonds=args.bonds)
+    if args.pdf:
+        report = report_md(date, signals, strategy)
+        pypandoc.convert_text(report, 'pdf', format='md', outputfile=args.pdf)
     if args.json:
         report = report_dict(date, signals, strategy)
         emit_json(report)
