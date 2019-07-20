@@ -187,7 +187,8 @@ def main():
                 index=False
             )
         plot_prices(
-            historical_price_data, os.path.join(args.report_dir, 'prices.svg')
+            historical_price_data,
+            os.path.join(args.report_dir, 'prices.svg')
         )
         with open(os.path.join(args.report_dir, 'acdumo.html'), 'w') as f:
             f.write(m.html(report_text, extensions=['tables']))
