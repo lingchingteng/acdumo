@@ -56,9 +56,9 @@ def download_historical_price_data(date, *tickers, freq='monthly'):
         freq
     )
     return {
-        ticker: pd.DataFrame(historical_price_data[ticker]['prices'][::-1])[[
-            'adjclose', 'formatted_date'
-        ]].dropna()
+        ticker: pd.DataFrame(
+            historical_price_data[ticker]['prices'][::-1]
+        ).dropna()
         for ticker in tickers
     }
 
@@ -66,9 +66,9 @@ def download_historical_price_data(date, *tickers, freq='monthly'):
 def plot_prices(historical_price_data, file_name):
     hpd = pd.concat(
         df.assign(
-            ticker=[ticker] * len(df.index),
-            normalized_adjclose=df.adjclose / df.adjclose.iloc[-1]
-        )
+            normalized_adjclose=df.adjclose / df.adjclose.iloc[-1],
+            ticker=[ticker] * len(df.index)
+        )[['formatted_date', 'normalized_adjclose', 'ticker']]
         for ticker, df in historical_price_data.items()
     )
     ax = sns.lineplot(
