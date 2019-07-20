@@ -57,7 +57,7 @@ def download_historical_price_data(date, *tickers, freq='monthly'):
     )
     return {
         ticker: pd.DataFrame(historical_price_data[ticker]['prices'][::-1])[[
-            'adjclose', 'date', 'formatted_date'
+            'adjclose', 'formatted_date'
         ]].dropna()
         for ticker in tickers
     }
@@ -179,6 +179,11 @@ def main():
     if args.report_dir:
         if not os.path.isdir(args.report_dir):
             os.mkdir(args.report_dir)
+        for ticker, df in historical_price_data.items():
+            df.to_csv(
+                os.path.join(args.report_dir, f'{ticker}.csv'),
+                index=False
+            )
         plot_prices(
             historical_price_data, os.path.join(args.report_dir, 'prices.svg')
         )
