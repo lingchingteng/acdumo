@@ -24,7 +24,7 @@ TICKERS = ('SPY', 'TLT', 'VSS', 'SCZ')
 BONDS = 'TLT'
 REPORT = """Date
 ====
-{}
+{date}
 
 Prices
 ======
@@ -34,11 +34,11 @@ Signals
 =======
 | Ticker | Signal |
 | ------ | ------ |
-{}
+{signals}
 
 Strategy
 ========
-{}
+{strategy}
 """
 
 
@@ -120,9 +120,9 @@ def decide_strategy(signals: dict, bonds: str = BONDS):
 
 def generate_report(date, signals: dict, strategy: str):
     return REPORT.format(
-        date.strftime('%Y-%m-%d'),
-        '\n'.join(f'|    {t} | {s:.4f} |' for t, s in signals.items()),
-        strategy
+        date=date.strftime('%Y-%m-%d'),
+        signals='\n'.join(f'|    {t} | {s:.4f} |' for t, s in signals.items()),
+        strategy=strategy
     )
 
 
