@@ -43,6 +43,7 @@ Strategy
 
 
 
+
 # Functions ====================================================================
 
 def download_historical_price_data(date, *tickers, freq='monthly'):
@@ -91,14 +92,14 @@ def plot_prices(historical_price_data, file_name):
 
 
 def compute_signal(df, freq='monthly'):
-    current_month_price = {
-        'monthly': df.adjclose[0],
-        'weekly': statistics.mean(df.adjclose[:4])
-    }[freq]
-    return sum(
-        current_month_price / statistics.mean(df.adjclose[x:x+4]) - 1
-        for x in {'monthly': (1, 3, 6), 'weekly': (4, 12, 24)}[freq]
-    )
+    if freq == 'monthly':
+        return sum(df.adjclose[0] / df.adjclose[x] - 1 for x in (1, 3, 6))
+    elif freq == 'weekly':
+        current_month_price = statistics.mean(df.adjclose[:4])
+        return sum(
+            current_month_price / statistics.mean(df.adjclose[x:x+4]) - 1
+            for x in (4, 12, 24)
+        )
 
 
 def compute_signals(historical_price_data, freq='monthly'):
@@ -117,7 +118,7 @@ def decide_strategy(signals: dict, bonds: str = BONDS):
     return f'Buy/Hold {choice}'
 
 
-def report_md(date, signals: dict, strategy: str):
+def generate_report(date, signals: dict, strategy: str):
     return REPORT.format(
         date.strftime('%Y-%m-%d'),
         '\n'.join(f'|    {t} | {s:.4f} |' for t, s in signals.items()),
@@ -128,7 +129,7 @@ def report_md(date, signals: dict, strategy: str):
 def parse_arguments():
     parser = ArgumentParser(description='Accelerated dual momentum')
     parser.add_argument(
-        'report',
+        'report_dir',
         metavar='<path/to/report/dir/>',
         nargs='?',
         help='write a HTML report'
@@ -169,23 +170,20 @@ def main():
             "I can't predict the future! Choose an earlier date."
         )
     historical_price_data = download_historical_price_data(
-        date,
-        *args.tickers,
-        freq=args.frequency
+        date, *args.tickers, freq=args.frequency
     )
     signals = compute_signals(historical_price_data, freq=args.frequency)
     strategy = decide_strategy(signals, bonds=args.bonds)
-    report = report_md(date, signals, strategy)
-    print(report, end='')
-    if args.report:
-        if not os.path.isdir(args.report):
-            os.mkdir(args.report)
+    report_text = genrate_report_md(date, signals, strategy)
+    print(report_text, end='')
+    if args.report_dir:
+        if not os.path.isdir(args.report_dir):
+            os.mkdir(args.report_dir)
         plot_prices(
-            historical_price_data,
-            os.path.join(args.report, 'prices.svg')
+            historical_price_data, os.path.join(args.report_dir, 'prices.svg')
         )
-        with open(os.path.join(args.report, 'acdumo.html'), 'w') as f:
-            f.write(m.html(report, extensions=['tables']))
+        with open(os.path.join(args.report_dir, 'acdumo.html'), 'w') as f:
+            f.write(m.html(report_text, extensions=['tables']))
 
 
 
