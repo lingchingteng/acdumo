@@ -88,7 +88,13 @@ def plot_prices(historical_price_data, file_name):
         )
         for ticker, df in historical_price_data.items()
     )
-    ax = sns.lineplot(x='formatted_date', y='normalized_adjclose', hue='ticker', data=hpd)
+    ax = sns.lineplot(
+        x='formatted_date',
+        y='normalized_adjclose',
+        hue='ticker',
+        data=hpd
+    )
+    ax.set_xlabel('')
     ax.set_xticklabels(labels=hpd.formatted_date[::-1], rotation=30)
     for ind, label in enumerate(ax.get_xticklabels()):
         if ind % 4 == 0:
