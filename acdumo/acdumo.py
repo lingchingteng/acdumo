@@ -174,7 +174,7 @@ def main():
     )
     signals = compute_signals(historical_price_data, freq=args.frequency)
     strategy = decide_strategy(signals, bonds=args.bonds)
-    report_text = genrate_report_md(date, signals, strategy)
+    report_text = generate_report(date, signals, strategy)
     print(report_text, end='')
     if args.report_dir:
         if not os.path.isdir(args.report_dir):
