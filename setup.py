@@ -23,7 +23,6 @@ setuptools.setup(
         'console_scripts': [
             'acdumo=acdumo.acdumo:main',
             'acdumo-install-certifi=acdumo.install_certifi:main'
-            'acdumo-download-pandoc=acdumo.download_pandoc:main'
         ]
     }
 )
