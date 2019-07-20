@@ -6,8 +6,10 @@
 
 import json
 import misaka as m
+import os
 import pandas as pd
 import statistics
+import seaborn as sns
 
 from argparse import ArgumentParser
 from datetime import datetime, timedelta
@@ -24,6 +26,10 @@ BONDS = 'TLT'
 REPORT = """Date
 ====
 {}
+
+Prices
+======
+![prices plot](prices.svg)
 
 Signals
 =======
@@ -47,10 +53,12 @@ def download_historical_price_data(date, *tickers):
         date.strftime('%Y-%m-%d'),
         'weekly'
     )
-    yield from (
-        pd.DataFrame(historical_price_data[ticker]['prices'][::-1])
+    return {
+        ticker: pd.DataFrame(historical_price_data[ticker]['prices'][::-1])[[
+            'adjclose', 'date', 'formatted_date'
+        ]]
         for ticker in tickers
-    )
+    }
 
 
 def compute_signal(df):
@@ -65,18 +73,26 @@ def compute_signal(df):
     )
 
 
-def compute_signals(date, *tickers):
-    yield from zip(
-        tickers,
-        (
-            compute_signal(df)
-            for df in download_historical_price_data(date, *tickers)
+def compute_signals(historical_price_data):
+    return {
+        ticker: compute_signal(df)
+        for ticker, df in historical_price_data.items()
+    }
+
+
+def plot_prices(historical_price_data, file_name):
+    hpd = pd.concat(
+        df.assign(
+            ticker=[ticker] * len(df.index),
+            normalized_adjclose=df.adjclose / df.adjclose.iloc[-1]
         )
+        for ticker, df in historical_price_data.items()
     )
-
-
-def signals_dict(date, *tickers):
-    return dict(compute_signals(date, *tickers))
+    ax = sns.lineplot(x='date', y='normalized_adjclose', hue='ticker', data=hpd)
+    ax.set_xticklabels(labels=hpd.formatted_date, rotation=30)
+    fig = ax.get_figure()
+    fig.tight_layout()
+    fig.savefig(file_name, format=file_name.split('.')[-1])
 
 
 def decide_strategy(signals: dict, bonds: str = BONDS):
@@ -94,6 +110,7 @@ def report_dict(date, signals: dict, strategy: str):
         'signals': signals,
         'strategy': strategy
     }
+
 
 def report_md(date, signals: dict, strategy: str):
     return REPORT.format(
@@ -148,11 +165,19 @@ def main():
         raise RuntimeError(
             "I can't predict the future! Choose an earlier date."
         )
-    signals = signals_dict(date, *args.tickers)
+    historical_price_data = download_historical_price_data(date, *args.tickers)
+    signals = compute_signals(historical_price_data)
     strategy = decide_strategy(signals, bonds=args.bonds)
-    if args.pdf:
+    if args.report:
         report = report_md(date, signals, strategy)
-        pypandoc.convert_text(report, 'pdf', format='md', outputfile=args.pdf)
+        if not os.path.isdir(args.report):
+            os.mkdir(args.report)
+        plot_prices(
+            historical_price_data,
+            os.path.join(args.report, 'prices.svg')
+        )
+        with open(os.path.join(args.report, 'acdumo.html'), 'w') as f:
+            f.write(m.html(report, extensions=['tables']))
     if args.json:
         report = report_dict(date, signals, strategy)
         emit_json(report)
