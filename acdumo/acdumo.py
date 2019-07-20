@@ -174,7 +174,6 @@ def main():
     historical_price_data = download_historical_price_data(
         date, *args.tickers, freq=args.frequency
     )
-    print(historical_price_data)
     signals = compute_signals(historical_price_data, freq=args.frequency)
     strategy = decide_strategy(signals, bonds=args.bonds)
     report_text = generate_report(date, signals, strategy)
