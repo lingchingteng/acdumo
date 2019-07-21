@@ -52,6 +52,7 @@ def download_historical_price_data(date, *tickers, freq: str = 'monthly'):
         days = 202
     elif freq == 'weekly':
         days = 186
+
     def download_into_dfs(buffer=0):
         historical_price_data = yahoo_financials.get_historical_price_data(
             (date - timedelta(days=days)).strftime('%Y-%m-%d'),
@@ -62,6 +63,7 @@ def download_historical_price_data(date, *tickers, freq: str = 'monthly'):
             pd.DataFrame(historical_price_data[ticker]['prices'][::-1])
             for ticker in tickers
         ]
+
     dfs = download_into_dfs()
     if freq == 'monthly':
         buffer = 0
