@@ -30,6 +30,12 @@ Prices
 ======
 ![prices plot](prices.svg)
 
+One Month Returns
+=================
+| Ticker | Return |
+| ------ | ------ |
+{returns}
+
 Signals
 =======
 | Ticker | Signal |
@@ -114,6 +120,25 @@ def plot_prices(historical_price_data: dict, file_name: str):
     fig.savefig(file_name, format='svg')
 
 
+def compute_one_month_return(df, freq: str = 'monthly'):
+    if freq == 'monthly':
+        return df.close[0] / df.close[1] - 1
+    elif freq == 'weekly':
+        return (
+            statistics.mean(df.close[:4]) / statistics.mean(df.close[4:8]) - 1
+        )
+
+
+def compute_one_month_returns(
+    historical_price_data: dict,
+    freq: str = 'monthly'
+):
+    return {
+        ticker: compute_one_month_return(df, freq=freq)
+        for ticker, df in historical_price_data.items()
+    }
+
+
 def compute_signal(df, freq: str = 'monthly'):
     if freq == 'monthly':
         return sum(df.close[0] / df.close[x] - 1 for x in (1, 3, 6))
@@ -141,9 +166,12 @@ def decide_strategy(signals: dict, bonds: str = BONDS):
     return f'Buy/Hold {choice}'
 
 
-def generate_report(date, signals: dict, strategy: str):
+def generate_report(date, returns: dict, signals: dict, strategy: str):
     return REPORT.format(
         date=date.strftime('%Y-%m-%d'),
+        returns='\n'.join(
+            f'|    {t} | {s*100:.3}% |' for t, s in returns.items()
+        ),
         signals='\n'.join(
             f'|    {t} | {s*100:.4}% |' for t, s in signals.items()
         ),
@@ -197,9 +225,12 @@ def main():
     historical_price_data = download_historical_price_data(
         date, *args.tickers, freq=args.frequency
     )
+    returns = compute_one_month_returns(
+        historical_price_data, freq=args.frequency
+    )
     signals = compute_signals(historical_price_data, freq=args.frequency)
     strategy = decide_strategy(signals, bonds=args.bonds)
-    report_text = generate_report(date, signals, strategy)
+    report_text = generate_report(date, returns, signals, strategy)
     print(report_text, end='')
     if args.report_dir:
         if not os.path.isdir(args.report_dir):
