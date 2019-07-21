@@ -68,19 +68,19 @@ def download_historical_price_data(date, *tickers, freq: str = 'monthly'):
 def plot_prices(historical_price_data: dict, file_name: str):
     hpd = pd.concat(
         df.assign(
-            normalized_adjclose=df.adjclose / df.adjclose.iloc[-1],
+            normalized_close=df.close / df.close.iloc[-1],
             ticker=[ticker] * len(df.index)
-        )[['formatted_date', 'normalized_adjclose', 'ticker']]
+        )[['formatted_date', 'normalized_close', 'ticker']]
         for ticker, df in historical_price_data.items()
     )
     ax = sns.lineplot(
         x='formatted_date',
-        y='normalized_adjclose',
+        y='normalized_close',
         hue='ticker',
         data=hpd
     )
     ax.set_xlabel('')
-    ax.set_ylabel(f'adjclose relative to {hpd.formatted_date.iloc[-1]}')
+    ax.set_ylabel(f'Close relative to {hpd.formatted_date.iloc[-1]}')
     ax.set_xticklabels(labels=hpd.formatted_date[::-1], rotation=30)
     if len(ax.get_xticklabels()) > 7:
         for ind, label in enumerate(ax.get_xticklabels()):
@@ -95,11 +95,11 @@ def plot_prices(historical_price_data: dict, file_name: str):
 
 def compute_signal(df, freq: str = 'monthly'):
     if freq == 'monthly':
-        return sum(df.adjclose[0] / df.adjclose[x] - 1 for x in (1, 3, 6))
+        return sum(df.close[0] / df.close[x] - 1 for x in (1, 3, 6))
     elif freq == 'weekly':
-        current_month_price = statistics.mean(df.adjclose[:4])
+        current_month_price = statistics.mean(df.close[:4])
         return sum(
-            current_month_price / statistics.mean(df.adjclose[x:x+4]) - 1
+            current_month_price / statistics.mean(df.close[x:x+4]) - 1
             for x in (4, 12, 24)
         )
 
@@ -123,7 +123,9 @@ def decide_strategy(signals: dict, bonds: str = BONDS):
 def generate_report(date, signals: dict, strategy: str):
     return REPORT.format(
         date=date.strftime('%Y-%m-%d'),
-        signals='\n'.join(f'|    {t} | {s:.4f} |' for t, s in signals.items()),
+        signals='\n'.join(
+            f'|    {t} | {s*100:.4}% |' for t, s in signals.items()
+        ),
         strategy=strategy
     )
 
