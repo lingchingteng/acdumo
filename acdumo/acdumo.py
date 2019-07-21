@@ -49,20 +49,37 @@ Strategy
 def download_historical_price_data(date, *tickers, freq: str = 'monthly'):
     yahoo_financials = YahooFinancials(tickers)
     if freq == 'monthly':
-        days = 248
+        days = 202
     elif freq == 'weekly':
         days = 186
-    historical_price_data = yahoo_financials.get_historical_price_data(
-        (date - timedelta(days=days)).strftime('%Y-%m-%d'),
-        date.strftime('%Y-%m-%d'),
-        freq
-    )
-    dfs = [
-        pd.DataFrame(historical_price_data[ticker]['prices'][::-1])
-        for ticker in tickers
-    ]
+    def download_and_load_into_dfs(buffer=0):
+        historical_price_data = yahoo_financials.get_historical_price_data(
+            (date - timedelta(days=days)).strftime('%Y-%m-%d'),
+            (date + timedelta(days=buffer)).strftime('%Y-%m-%d'),
+            freq
+        )
+        return [
+            pd.DataFrame(historical_price_data[ticker]['prices'][::-1])
+            for ticker in tickers
+        ]
+    dfs = download_and_load_into_dfs()
+    if freq == 'monthly':
+        buffer = 0
+        while date.strftime('%Y-%m-01') not in set(dfs[0].formatted_date):
+            buffer += 1
+            dfs = download_and_load_into_dfs(buffer=buffer)
+    elif freq == 'weekly':
+        dfs = [df.drop(0) for df in dfs]
     return {
-        ticker: df[[d.endswith('-01') for d in df.formatted_date]].reset_index().dropna()
+        ticker: (
+            df[
+                [
+                    d.endswith('-01') if freq == 'monthly' else True
+                    for d in df.formatted_date
+                ]
+            ]
+            .reset_index().dropna()
+        )
         for ticker, df in zip(tickers, dfs)
     }
 
@@ -97,7 +114,6 @@ def plot_prices(historical_price_data: dict, file_name: str):
 
 def compute_signal(df, freq: str = 'monthly'):
     if freq == 'monthly':
-        print(df)
         return sum(df.close[0] / df.close[x] - 1 for x in (1, 3, 6))
     elif freq == 'weekly':
         current_month_price = statistics.mean(df.close[:4])
