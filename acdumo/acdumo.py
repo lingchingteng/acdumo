@@ -49,7 +49,7 @@ Strategy
 def download_historical_price_data(date, *tickers, freq: str = 'monthly'):
     yahoo_financials = YahooFinancials(tickers)
     if freq == 'monthly':
-        days = 217
+        days = 248
     elif freq == 'weekly':
         days = 186
     historical_price_data = yahoo_financials.get_historical_price_data(
@@ -57,11 +57,13 @@ def download_historical_price_data(date, *tickers, freq: str = 'monthly'):
         date.strftime('%Y-%m-%d'),
         freq
     )
-    return {
-        ticker: pd.DataFrame(
-            historical_price_data[ticker]['prices'][::-1]
-        ).drop(0).reset_index().dropna()
+    dfs = [
+        pd.DataFrame(historical_price_data[ticker]['prices'][::-1])
         for ticker in tickers
+    ]
+    return {
+        ticker: df[[d.endswith('-01') for d in df.formatted_date]].reset_index().dropna()
+        for ticker, df in zip(tickers, dfs)
     }
 
 
@@ -95,6 +97,7 @@ def plot_prices(historical_price_data: dict, file_name: str):
 
 def compute_signal(df, freq: str = 'monthly'):
     if freq == 'monthly':
+        print(df)
         return sum(df.close[0] / df.close[x] - 1 for x in (1, 3, 6))
     elif freq == 'weekly':
         current_month_price = statistics.mean(df.close[:4])
