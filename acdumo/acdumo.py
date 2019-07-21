@@ -52,7 +52,7 @@ def download_historical_price_data(date, *tickers, freq: str = 'monthly'):
         days = 202
     elif freq == 'weekly':
         days = 186
-    def download__into_dfs(buffer=0):
+    def download_into_dfs(buffer=0):
         historical_price_data = yahoo_financials.get_historical_price_data(
             (date - timedelta(days=days)).strftime('%Y-%m-%d'),
             (date + timedelta(days=buffer)).strftime('%Y-%m-%d'),
