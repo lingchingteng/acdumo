@@ -18,7 +18,13 @@ setuptools.setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
     ],
-    install_requires = ['misaka', 'pandas', 'seaborn', 'yahoofinancials'],
+    install_requires = [
+        'flask'
+        'misaka',
+        'pandas',
+        'seaborn',
+        'yahoofinancials',
+    ],
     entry_points = {
         'console_scripts': [
             'acdumo=acdumo.acdumo:main',
