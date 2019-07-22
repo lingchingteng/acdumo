@@ -31,7 +31,9 @@ from acdumo.forms import (
     LoginForm, RegistrationForm, ResetPasswordRequestForm, ResetPasswordForm
 )
 from ucsd_bisb_unofficial.models import get_db, User, Role
-from ucsd_bisb_unofficial.email import send_confirmation_email
+from ucsd_bisb_unofficial.email import (
+    send_confirmation_email, send_password_reset_email
+)
 
 
 
@@ -75,13 +77,152 @@ def register():
         user.add_role(Role.query.filter_by(name='named_user').first())
         db.session.commit()
         send_confirmation_email(user)
-        flash(
-            'Thanks for registering!  Please check your email to '
-            'confirm your email address.'
-        )
+        flash('Please check your email to confirm your email address.')
         return redirect(url_for('auth.login'))
     return render_template(
         'auth/register.html',
         title='Register',
         form=form
     )
+
+
+@bp.route('/login', methods=('GET', 'POST'))
+def login():
+    """Log in to the site
+
+    If the current user is already logged in, they will be redirected to the
+    index page.
+
+    Otherwise, the login page will be rendered. It includes a LoginForm (see
+    `forms.py`). Supplying valid credentials will allow the user to log in.
+    """
+
+    if current_user.is_authenticated:
+        return redirect(url_for('jumbotron.index'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user is None or any(
+            (
+                not user.check_password(form.password.data),
+                not user.email_confirmed
+            )
+        ):
+            flash('Invalid username or password', 'error')
+            return redirect(url_for('auth.login'))
+        login_user(user, remember=form.remember_me.data)
+        next_page = request.args.get('next')
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('jumbotron.index')
+        return redirect(next_page)
+    return render_template('auth/login.html', title='Log In', form=form)
+
+
+@bp.route('/logout')
+def logout():
+    """Log out the current user"""
+
+    logout_user()
+    return redirect(url_for('auth.login'))
+
+
+@bp.route('/confirm/<token>')
+def confirm_email(token):
+    """Email confirmation page
+
+    If the current user is already logged in, they will be redirected to the
+    index page.
+
+    This function renders the page liked to by the registration confirmation
+    email. It includes a message about the success or failure of the
+    confirmation.
+
+    Parameters
+    ----------
+    token
+        The JSON web token
+    """
+
+    if current_user.is_authenticated:
+        return redirect(url_for('jumbotron.index'))
+    user = User.verify_confirm_email_token(token)
+    if not user:
+        flash('Strange, no account found.', 'error')
+    if user.email_confirmed:
+        flash('Account already confirmed. Please login.', 'info')
+    else:
+        user.email_confirmed = True
+        user.email_confirmed_on = datetime.utcnow()
+        db = get_db()
+        db.session.add(user)
+        db.session.commit()
+        flash('Thank you for confirming your email address!')
+    return redirect(url_for('auth.login'))
+
+
+@bp.route('/reset_password_request', methods=('GET', 'POST'))
+def reset_password_request():
+    """Request a password reset
+
+    If the current user is already logged in, they will be redirected to the
+    index page.
+
+    Otherwise, the reset password page will be rendered. It includes a
+    ResetPasswordRequestForm (see `forms.py`). Submitting a valid
+    username-email pair will cause a password reset email to be sent.
+    """
+
+    if current_user.is_authenticated:
+        return redirect(url_for('jumbotron.index'))
+    form = ResetPasswordRequestForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and user.email == form.email.data:
+            send_password_reset_email(user)
+            flash(
+                'Check your email for the instructions to reset your password'
+            )
+            return redirect(url_for('auth.login'))
+        else:
+            flash('Invalid username/email pair')
+            return redirect(url_for('auth.reset_password_request'))
+    return render_template(
+        'auth/reset_password_request.html',
+        title='Reset Password',
+        form=form
+    )
+
+
+@bp.route('/reset_password/<token>', methods=('GET', 'POST'))
+def reset_password(token):
+    """Reset a user's password
+    
+    If the current user is already logged in, they will be redirected to the
+    index page.
+
+    This function renders the page linked to by the password reset email. The
+    link includes a JSON web token as a variable component of the URL. If the
+    token cannot be verified, the user is redirected to the login page.
+
+    If the token is verified, the user's password will be reset according to
+    the data entered into the included ResetPasswordForm (see `forms.py`).
+
+    Parameters
+    ----------
+    token
+        the JSON web token
+    """
+
+    if current_user.is_authenticated:
+        return redirect(url_for('jumbotron.index'))
+    user = User.verify_reset_password_token(token)
+    if not user:
+        return redirect(url_for('auth.login'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user.set_password(form.password.data)
+        db = get_db()
+        db.session.commit()
+        flash('Your password has been reset.')    
+        return redirect(url_for('auth.login'))
+    return render_template('auth/reset_password.html', form=form)
