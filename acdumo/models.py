@@ -55,12 +55,9 @@ class User(UserMixin, db.Model):
     username : str
     email : str
     password_hash : str
-    posts
     email_confirmation_sent_on : datetime
     email_confirmed : bool
     email_confirmed_on : datetime
-    confidentiality_agreed : bool
-    confidentiality_agreed_on : datetime
     """
 
     id = db.Column(db.Integer, primary_key=True)

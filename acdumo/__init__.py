@@ -61,7 +61,7 @@ def create_app(test_config=None):
     except OSError:
         pass
     
-    from acdumo.models import db, migrate, get_db
+    from acdumo.models import db, migrate
     from acdumo.login import login
     from acdumo.email import mail
     from acdumo.errors import forbidden
