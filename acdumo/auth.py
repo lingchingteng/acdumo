@@ -30,8 +30,8 @@ from werkzeug.urls import url_parse
 from acdumo.forms import (
     LoginForm, RegistrationForm, ResetPasswordRequestForm, ResetPasswordForm
 )
-from ucsd_bisb_unofficial.models import get_db, User, Role
-from ucsd_bisb_unofficial.email import (
+from acdumo.models import get_db, User
+from acdumo.email import (
     send_confirmation_email, send_password_reset_email
 )
 
@@ -64,7 +64,7 @@ def register():
     """
 
     if current_user.is_authenticated:
-        return redirect(url_for('jumbotron.index'))
+        return redirect(url_for('strategy.index'))
     form = RegistrationForm()
     if form.validate_on_submit():
         if form.email.data not in current_app.config['APPROVED_EMAILS']:
@@ -75,7 +75,6 @@ def register():
         db = get_db()
         db.create_all()
         db.session.add(user)
-        user.add_role(Role.query.filter_by(name='named_user').first())
         db.session.commit()
         send_confirmation_email(user)
         flash('Please check your email to confirm your email address.')
@@ -99,7 +98,7 @@ def login():
     """
 
     if current_user.is_authenticated:
-        return redirect(url_for('jumbotron.index'))
+        return redirect(url_for('strategy.index'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -114,7 +113,7 @@ def login():
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('jumbotron.index')
+            next_page = url_for('strategy.index')
         return redirect(next_page)
     return render_template('auth/login.html', title='Log In', form=form)
 
@@ -145,7 +144,7 @@ def confirm_email(token):
     """
 
     if current_user.is_authenticated:
-        return redirect(url_for('jumbotron.index'))
+        return redirect(url_for('strategy.index'))
     user = User.verify_confirm_email_token(token)
     if not user:
         flash('Strange, no account found.', 'error')
@@ -174,7 +173,7 @@ def reset_password_request():
     """
 
     if current_user.is_authenticated:
-        return redirect(url_for('jumbotron.index'))
+        return redirect(url_for('strategy.index'))
     form = ResetPasswordRequestForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -215,7 +214,7 @@ def reset_password(token):
     """
 
     if current_user.is_authenticated:
-        return redirect(url_for('jumbotron.index'))
+        return redirect(url_for('strategy.index'))
     user = User.verify_reset_password_token(token)
     if not user:
         return redirect(url_for('auth.login'))

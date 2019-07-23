@@ -1,0 +1,5 @@
+Your account on acdumo was successfully created.
+Please click the link below to confirm your email address and
+activate your account:
+  
+{{ url_for('auth.confirm_email', token=token, _external=True) }}

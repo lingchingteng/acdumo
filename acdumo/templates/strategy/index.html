@@ -1,0 +1,4 @@
+{% extends 'base.html' %}
+{% block content %}
+{{report|markdown(tables=True)}}
+{% endblock %}

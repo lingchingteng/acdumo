@@ -74,8 +74,8 @@ def create_app(test_config=None):
     for error, handler in ((403, forbidden),):
         app.register_error_handler(403, forbidden)
     
-    from acdumo import auth, strategy
-    for bp in auth.bp, strategy.bp:
+    from acdumo import auth, strategy, protected
+    for bp in auth.bp, strategy.bp, protected.bp:
         app.register_blueprint(bp)
     
     app.add_url_rule('/', endpoint='auth.login')
