@@ -72,6 +72,31 @@ CSV Data
 {csv_links}
 """
 
+REPORT = """Date
+----
+{date}
+
+Strategy
+--------
+{strategy}
+
+Signals
+-------
+| Ticker | Signal |
+| ------ | ------ |
+{signals}
+
+One Month Returns
+-----------------
+| Ticker | Return |
+| ------ | ------ |
+{returns}
+
+CSV Data
+--------
+{csv_links}
+"""
+
 
 
 
@@ -84,10 +109,10 @@ def index():
 
     date = datetime.today().strftime('%Y-%m-%d')
     hpd = download_historical_price_data(datetime.today(), *TICKERS)
-    plot_prices(
-        hpd,
-        os.path.join(current_app.config['PROTECTED_DIR'], f'prices-{date}.svg')
-    )
+    # plot_prices(
+    #     hpd,
+    #     os.path.join(current_app.config['PROTECTED_DIR'], f'prices-{date}.svg')
+    # )
     returns = compute_one_month_returns(hpd)
     signals = compute_signals(hpd)
     strategy = decide_strategy(signals, bonds=BONDS)
@@ -107,10 +132,10 @@ def index():
             returns='\n'.join(
                 f'|    {t} | {s*100:.3}% |' for t, s in returns.items()
             ),
-            prices_svg=url_for(
-                'protected.protected',
-                filename=f'prices-{date}.svg'
-            ),
+            # prices_svg=url_for(
+            #     'protected.protected',
+            #     filename=f'prices-{date}.svg'
+            # ),
             csv_links='\n'.join(
                 f"<a href=\"{url_for('protected.protected',filename=f'{ticker}-{date}.csv')}\" class='btn btn-outline-primary'>{ticker}</a>"
                 for ticker in TICKERS
