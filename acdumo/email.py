@@ -83,34 +83,34 @@ def send_email(subject, sender, recipients, text_body, html_body):
     Thread(target=send_async_email, args=(app, msg)).start()
 
 
-# def send_password_reset_email(user):
-#     """Send a password reset email
+def send_password_reset_email(user):
+    """Send a password reset email
 
-#     A JSON web token is created, then included in an email to the account for
-#     which a password reset has been requested.
+    A JSON web token is created, then included in an email to the account for
+    which a password reset has been requested.
 
-#     Parameters
-#     ----------
-#     user : User
-#         User whose password is to be reset
-#     """
+    Parameters
+    ----------
+    user : User
+        User whose password is to be reset
+    """
 
-#     token = user.get_reset_password_token()
-#     send_email(
-#         '[ucsd-bisb-unofficial] Reset Your Password',
-#         sender=current_app.config['ADMINS'][0],
-#         recipients=[user.email],
-#         text_body=render_template(
-#             'email/reset_password.txt',
-#             user=user,
-#             token=token
-#         ),
-#         html_body=render_template(
-#             'email/reset_password.html',
-#             user=user,
-#             token=token
-#         )
-#     )
+    token = user.get_reset_password_token()
+    send_email(
+        '[acdumo] Reset Your Password',
+        sender=current_app.config['ADMINS'][0],
+        recipients=[user.email],
+        text_body=render_template(
+            'email/reset_password.txt',
+            user=user,
+            token=token
+        ),
+        html_body=render_template(
+            'email/reset_password.html',
+            user=user,
+            token=token
+        )
+    )
 
 
 def send_confirmation_email(user):

@@ -24,6 +24,7 @@ setuptools.setup(
         'flask-mail',
         'flask-migrate',
         'flask-misaka',
+        'flask-wtf',
         'jwt',
         'misaka',
         'pandas',

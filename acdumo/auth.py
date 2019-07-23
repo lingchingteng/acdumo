@@ -30,8 +30,8 @@ from werkzeug.urls import url_parse
 from acdumo.forms import (
     LoginForm, RegistrationForm, ResetPasswordRequestForm, ResetPasswordForm
 )
-from ucsd_bisb_unofficial.models import get_db, User, Role
-from ucsd_bisb_unofficial.email import (
+from acdumo.models import get_db, User
+from acdumo.email import (
     send_confirmation_email, send_password_reset_email
 )
 
