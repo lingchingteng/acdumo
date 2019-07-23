@@ -109,3 +109,18 @@ class ResetPasswordForm(FlaskForm):
         validators=[DataRequired(), EqualTo('password')]
     )
     submit = SubmitField('Request Password Reset')
+
+
+class StrategyForm(FlaskForm):
+    """A form for strategy queries
+
+    Attributes
+    ----------
+    date : StringField
+    tickers : StringField
+    submit : SubmitField
+    """
+
+    date = StringField('yyyy-mm-dd', validators=[DataRequired()])
+    tickers = StringField('TK1 TK2 TK3...', validators=[DataRequired()])
+    submit = SubmitField('Submit')

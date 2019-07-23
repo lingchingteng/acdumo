@@ -1,4 +1,25 @@
 {% extends 'base.html' %}
 {% block content %}
+<form class="form-login" method="post">
+    {{ form.hidden_tag() }}
+    {{
+      form.date(
+        id='date',
+        class_='form-control',
+        placeholder='yyyy-mm-dd',
+        required=True,
+        autofocus=True
+      )
+    }}
+    {{
+      form.tickers(
+        id='tickers',
+        class_='form-control',
+        placeholder='TK1 TK2 TK3...',
+        required=True
+      )
+    }}
+    {{ form.submit(class_="btn btn-lg btn-outline-primary btn-block") }}
+  </form>
 {{report|markdown(tables=True)}}
 {% endblock %}

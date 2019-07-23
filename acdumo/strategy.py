@@ -23,10 +23,11 @@ import os.path
 
 from datetime import datetime
 from flask import (
-    Blueprint, render_template, current_app, url_for
+    Blueprint, render_template, current_app, url_for, redirect
 )
 from flask_login import login_required
 
+from acdumo.forms import StrategyForm
 from acdumo.acdumo import (
     TICKERS, BONDS, download_historical_price_data, compute_one_month_returns,
     compute_signals, decide_strategy, plot_prices
@@ -36,7 +37,7 @@ from acdumo.acdumo import (
 
 # Blueprint assignment =========================================================
 
-bp = Blueprint('strategy', __name__, url_prefix='/strategy')
+bp = Blueprint('strategy', __name__)
 
 
 
@@ -102,10 +103,14 @@ CSV Data
 
 # Functions ====================================================================
 
-@bp.route('/index', methods=('GET', 'POST'))
+@bp.route('/', methods=('GET', 'POST'))
 @login_required
 def index():
     f"""Render the strategy index"""
+
+    form = StrategyForm()
+    if form.validate_on_submit():
+        return redirect(url_for('strategy.index'))
 
     date = datetime.today().strftime('%Y-%m-%d')
     hpd = download_historical_price_data(datetime.today(), *TICKERS)
@@ -140,5 +145,6 @@ def index():
                 f"<a href=\"{url_for('protected.protected',filename=f'{ticker}-{date}.csv')}\" class='btn btn-outline-primary'>{ticker}</a>"
                 for ticker in TICKERS
             )
-        )
+        ),
+        form=form
     )
