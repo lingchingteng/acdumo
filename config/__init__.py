@@ -29,6 +29,7 @@ SQLALCHEMY_DATABASE_URI = (
     or 'sqlite:///' + os.path.join(basedir, 'app.db')
 )
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+PROTECTED_DIR = os.path.join(basedir, 'protected')
 MAIL_SERVER = os.environ.get('MAIL_SERVER') or 'smtp.gmail.com'
 MAIL_PORT = int(os.environ.get('MAIL_PORT') or 587)
 MAIL_USE_TLS = True
@@ -49,6 +50,7 @@ SQLALCHEMY_DATABASE_URI = (
     or 'sqlite:///' + os.path.join(basedir, 'app.db')
 )
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+PROTECTED_DIR = os.path.join(basedir, 'protected')
 MAIL_SERVER = os.environ.get('MAIL_SERVER') or 'smtp.gmail.com'
 MAIL_PORT = int(os.environ.get('MAIL_PORT') or 465)
 MAIL_USE_TLS = False
