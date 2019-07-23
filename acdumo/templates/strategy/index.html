@@ -1,4 +1,4 @@
 {% extends 'base.html' %}
 {% block content %}
-Hello World
+{{report|markdown(tables=True)}}
 {% endblock %}
