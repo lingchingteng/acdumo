@@ -66,6 +66,10 @@ One Month Returns
 Prices
 ------
 ![prices plot]({prices_svg})
+
+CSV Data
+--------
+{csv_links}
 """
 
 
@@ -106,6 +110,10 @@ def index():
             prices_svg=url_for(
                 'protected.protected',
                 filename=f'prices-{date}.svg'
+            ),
+            csv_links='\n'.join(
+                f"<a href=\"{url_for('protected.protected',filename=f'{ticker}-{date}.csv')}\" class='btn btn-outline-primary'>{ticker}</a>"
+                for ticker in TICKERS
             )
         )
     )
