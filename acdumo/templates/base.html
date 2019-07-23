@@ -17,11 +17,11 @@
   <!-- Local CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   
-  <title>AcDuMo</title>
+  <title>Accelerated Dual Momentum</title>
 </head>
 
 <nav class="navbar navbar-expand-md navbar-primary bg-primary fixed-top">
-  <h1 class="nav-header">AcDuMo</h1>
+  <h1 class="nav-header">Accelerated Dual Momentum</h1>
   <ul>
     {% if current_user.is_anonymous %}
     <li><a href="{{ url_for('auth.register') }}">Register</a>
