@@ -23,7 +23,7 @@ import os.path
 
 from datetime import datetime
 from flask import (
-    Blueprint, render_template, current_app, url_for, redirect
+    Blueprint, render_template, current_app, url_for, redirect, request
 )
 from flask_login import login_required
 
@@ -103,6 +103,7 @@ CSV Data
 
 # Functions ====================================================================
 
+
 @bp.route('/', methods=('GET', 'POST'))
 @login_required
 def index():
@@ -110,10 +111,21 @@ def index():
 
     form = StrategyForm()
     if form.validate_on_submit():
-        return redirect(url_for('strategy.index'))
+        return redirect(
+            url_for(
+                'strategy.index',
+                date=form.date.data,
+                tickers=form.tickers.data
+            )
+        )
 
-    date = datetime.today().strftime('%Y-%m-%d')
-    hpd = download_historical_price_data(datetime.today(), *TICKERS)
+    date = datetime.strptime(
+        request.args.get('date', datetime.today().strftime('%Y-%m-%d')),
+        '%Y-%m-%d'
+    )
+    tickers = request.args.get('tickers', ' '.join(TICKERS)).split()
+
+    hpd = download_historical_price_data(date, *tickers)
     # plot_prices(
     #     hpd,
     #     os.path.join(current_app.config['PROTECTED_DIR'], f'prices-{date}.svg')
@@ -129,7 +141,7 @@ def index():
     return render_template(
         'strategy/index.html',
         report=REPORT.format(
-            date=date,
+            date=date.strftime('%Y-%m-%d'),
             strategy=strategy,
             signals='\n'.join(
                 f'|    {t} | {s*100:.4}% |' for t, s in signals.items()
@@ -143,8 +155,10 @@ def index():
             # ),
             csv_links='\n'.join(
                 f"<a href=\"{url_for('protected.protected',filename=f'{ticker}-{date}.csv')}\" class='btn btn-outline-primary'>{ticker}</a>"
-                for ticker in TICKERS
+                for ticker in tickers
             )
         ),
-        form=form
+        form=form,
+        date=date.strftime('%Y-%m-%d'),
+        tickers=' '.join(tickers)
     )

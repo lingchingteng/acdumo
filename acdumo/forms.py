@@ -11,6 +11,8 @@ http://flask-wtf.readthedocs.io/en/stable/ )
 
 # Imports  =====================================================================
 
+from datetime import datetime
+
 from flask import request, current_app
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
@@ -121,6 +123,6 @@ class StrategyForm(FlaskForm):
     submit : SubmitField
     """
 
-    date = StringField('yyyy-mm-dd', validators=[DataRequired()])
-    tickers = StringField('TK1 TK2 TK3...', validators=[DataRequired()])
+    date = StringField('yyyy-mm-dd', default=datetime.today().strftime('%Y-%m-%d'))
+    tickers = StringField('TK1 TK2 TK3...', default='SPY TLT VSS SCZ')
     submit = SubmitField('Submit')

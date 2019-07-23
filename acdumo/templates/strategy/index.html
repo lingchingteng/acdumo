@@ -8,7 +8,8 @@
         class_='form-control',
         placeholder='yyyy-mm-dd',
         required=True,
-        autofocus=True
+        autofocus=True,
+        value=date
       )
     }}
     {{
@@ -16,7 +17,8 @@
         id='tickers',
         class_='form-control',
         placeholder='TK1 TK2 TK3...',
-        required=True
+        required=True,
+        value=tickers
       )
     }}
     {{ form.submit(class_="btn btn-lg btn-outline-primary btn-block") }}
