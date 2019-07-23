@@ -31,7 +31,7 @@ from werkzeug.exceptions import abort
 
 # Blueprint assignment =========================================================
 
-bp = Blueprint('blog', __name__, url_prefix='/strategy')
+bp = Blueprint('strategy', __name__, url_prefix='/strategy')
 
 
 

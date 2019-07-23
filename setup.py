@@ -25,7 +25,7 @@ setuptools.setup(
         'flask-migrate',
         'flask-misaka',
         'flask-wtf',
-        'jwt',
+        'pyjwt',
         'misaka',
         'pandas',
         'seaborn',
