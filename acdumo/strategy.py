@@ -87,6 +87,11 @@ def index():
     returns = compute_one_month_returns(hpd)
     signals = compute_signals(hpd)
     strategy = decide_strategy(signals, bonds=BONDS)
+    for ticker, df in hpd.items():
+        df.to_csv(
+            os.path.join(current_app.config['PROTECTED_DIR'], f'{ticker}-{date}.csv'),
+            index=False
+        )
     return render_template(
         'strategy/index.html',
         report=REPORT.format(
