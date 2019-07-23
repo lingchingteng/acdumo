@@ -3,12 +3,32 @@ body {
   max-width: 48rem;
   margin: auto;
 }
-.starter-template {
-  padding: 2rem 1.5rem;
-  text-align: center;
-  color: var(--primary);
-  font-family: sans-serif;
+.flash {
+  margin: 1em 0; padding: 1em; background: var(--light);
+  border: 1px solid var(--primary);
 }
-.nav-header {
-  color: var(--light);
+.content-login {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
 }
+.form-login {
+  width: 100%;
+  max-width: 330px;
+}
+.form-login .form-control {
+  padding: 10px;
+  font-size: 16px;
+}
+
+/* table styling */
+table {
+  border-spacing: 0;
+  border-collapse: collapse;
+  display: block;
+  width: 100%;
+  overflow: auto;
+}
+table th { font-weight: 600; }
+table th, table td { padding: 6px 13px; border: 1px solid #dfe2e5; }
+table tr:nth-child(2n) { background-color: var(--light); }

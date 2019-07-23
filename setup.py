@@ -19,7 +19,12 @@ setuptools.setup(
         'Operating System :: OS Independent',
     ],
     install_requires = [
-        'flask'
+        'flask',
+        'flask-login',
+        'flask-mail',
+        'flask-migrate',
+        'flask-misaka',
+        'jwt',
         'misaka',
         'pandas',
         'seaborn',
