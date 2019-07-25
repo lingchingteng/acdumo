@@ -1,0 +1,3 @@
+graft okscope/static
+graft okscope/templates
+global-exclude *.pyc
