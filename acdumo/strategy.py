@@ -129,7 +129,7 @@ def index():
                 filename=f"prices-{'-'.join(tickers)}-{date.strftime('%Y-%m-%d')}.svg"
             ),
             csv_links='\n'.join(
-                f"<a href=\"{url_for('protected.protected',filename=f'{ticker}-{date}.csv')}\" class='btn btn-outline-primary'>{ticker}</a>"
+                f"<a href=\"{url_for('protected.protected',filename=f'{ticker}-{date.strftime('%Y-%m-%d')}.csv')}\" class='btn btn-outline-primary'>{ticker}</a>"
                 for ticker in tickers
             )
         ),
