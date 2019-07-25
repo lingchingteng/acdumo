@@ -108,15 +108,16 @@ def index():
     returns = compute_one_month_returns(hpd)
     signals = compute_signals(hpd)
     strategy = decide_strategy(signals, bonds=BONDS)
+    formatted_date = date.strftime('%Y-%m-%d')
     for ticker, df in hpd.items():
         df.to_csv(
-            os.path.join(current_app.config['PROTECTED_DIR'], f"{ticker}-{date.strftime('%Y-%m-%d')}.csv"),
+            os.path.join(current_app.config['PROTECTED_DIR'], f"{ticker}-{formatted_date}.csv"),
             index=False
         )
     return render_template(
         'strategy/index.html',
         report=REPORT.format(
-            date=date.strftime('%Y-%m-%d'),
+            date=formatted_date,
             strategy=strategy,
             signals='\n'.join(
                 f'|    {t} | {s*100:.4}% |' for t, s in signals.items()
@@ -126,14 +127,14 @@ def index():
             ),
             prices_svg=url_for(
                 'protected.protected',
-                filename=f"prices-{'-'.join(tickers)}-{date.strftime('%Y-%m-%d')}.svg"
+                filename=f"prices-{'-'.join(tickers)}-{formatted_date}.svg"
             ),
             csv_links='\n'.join(
-                f"<a href=\"{url_for('protected.protected',filename=f'{ticker}-{date.strftime('%Y-%m-%d')}.csv')}\" class='btn btn-outline-primary'>{ticker}</a>"
+                f"<a href=\"{url_for('protected.protected',filename=f'{ticker}-{formatted_date}.csv')}\" class='btn btn-outline-primary'>{ticker}</a>"
                 for ticker in tickers
             )
         ),
         form=form,
-        date=date.strftime('%Y-%m-%d'),
+        date=formatted_date,
         tickers=' '.join(tickers)
     )
