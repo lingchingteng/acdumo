@@ -55,7 +55,7 @@ Strategy
 def download_historical_price_data(date, *tickers, freq: str = 'monthly'):
     yahoo_financials = YahooFinancials(tickers)
     if freq == 'monthly':
-        days = 202
+        days = 217
     elif freq == 'weekly':
         days = 186
 
