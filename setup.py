@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='acdumo',
-    version='0.0.9',
+    version='0.0.10',
     author='Anthony Aylward, Serena Wu, Elijah Kun',
     author_email='aaylward@eng.ucsd.edu',
     description='Accelerated dual momentum',
