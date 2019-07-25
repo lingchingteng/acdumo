@@ -118,6 +118,7 @@ def plot_prices(historical_price_data: dict, file_name: str):
     fig = ax.get_figure()
     fig.tight_layout()
     fig.savefig(file_name, format='svg')
+    fig.clf()
 
 
 def compute_one_month_return(df, freq: str = 'monthly'):
