@@ -103,7 +103,7 @@ def index():
     hpd = download_historical_price_data(date, *tickers)
     plot_prices(
         hpd,
-        os.path.join(current_app.config['PROTECTED_DIR'], f"prices-{date.strftime('%Y-%m-%d')}.svg")
+        os.path.join(current_app.config['PROTECTED_DIR'], f"prices-{'-'.join(tickers)}-{date.strftime('%Y-%m-%d')}.svg")
     )
     returns = compute_one_month_returns(hpd)
     signals = compute_signals(hpd)
@@ -126,7 +126,7 @@ def index():
             ),
             prices_svg=url_for(
                 'protected.protected',
-                filename=f"prices-{date.strftime('%Y-%m-%d')}.svg"
+                filename=f"prices-{'-'.join(tickers)}-{date.strftime('%Y-%m-%d')}.svg"
             ),
             csv_links='\n'.join(
                 f"<a href=\"{url_for('protected.protected',filename=f'{ticker}-{date}.csv')}\" class='btn btn-outline-primary'>{ticker}</a>"
