@@ -109,7 +109,7 @@ def plot_prices(historical_price_data: dict, file_name: str):
     ax.set_xlabel('')
     ax.set_ylabel(f'adjclose relative to {hpd.formatted_date.iloc[-1]}')
     ax.set_xticklabels(labels=hpd.formatted_date[::-1], rotation=30)
-    if len(ax.get_xticklabels()) > 7:
+    if len(ax.get_xticklabels()) > 8:
         for ind, label in enumerate(ax.get_xticklabels()):
             if ind % 4 == 0:
                 label.set_visible(True)
