@@ -95,19 +95,19 @@ def download_historical_price_data(date, *tickers, freq: str = 'monthly'):
 def plot_prices(historical_price_data: dict, file_name: str):
     hpd = pd.concat(
         df.assign(
-            normalized_close=df.close / df.close.iloc[-1],
+            normalized_adjclose=df.adjclose / df.adjclose.iloc[-1],
             ticker=[ticker] * len(df.index)
-        )[['formatted_date', 'normalized_close', 'ticker']]
+        )[['formatted_date', 'normalized_adjclose', 'ticker']]
         for ticker, df in historical_price_data.items()
     )
     ax = sns.lineplot(
         x='formatted_date',
-        y='normalized_close',
+        y='normalized_adjclose',
         hue='ticker',
         data=hpd
     )
     ax.set_xlabel('')
-    ax.set_ylabel(f'Close relative to {hpd.formatted_date.iloc[-1]}')
+    ax.set_ylabel(f'adjclose relative to {hpd.formatted_date.iloc[-1]}')
     ax.set_xticklabels(labels=hpd.formatted_date[::-1], rotation=30)
     if len(ax.get_xticklabels()) > 7:
         for ind, label in enumerate(ax.get_xticklabels()):
@@ -122,10 +122,10 @@ def plot_prices(historical_price_data: dict, file_name: str):
 
 def compute_one_month_return(df, freq: str = 'monthly'):
     if freq == 'monthly':
-        return df.close[0] / df.close[1] - 1
+        return df.adjclose[0] / df.adjclose[1] - 1
     elif freq == 'weekly':
         return (
-            statistics.mean(df.close[:4]) / statistics.mean(df.close[4:8]) - 1
+            statistics.mean(df.adjclose[:4]) / statistics.mean(df.adjclose[4:8]) - 1
         )
 
 
@@ -141,11 +141,11 @@ def compute_one_month_returns(
 
 def compute_signal(df, freq: str = 'monthly'):
     if freq == 'monthly':
-        return sum(df.close[0] / df.close[x] - 1 for x in (1, 3, 6))
+        return sum(df.adjclose[0] / df.adjclose[x] - 1 for x in (1, 3, 6))
     elif freq == 'weekly':
-        current_month_price = statistics.mean(df.close[:4])
+        current_month_price = statistics.mean(df.adjclose[:4])
         return sum(
-            current_month_price / statistics.mean(df.close[x:x+4]) - 1
+            current_month_price / statistics.mean(df.adjclose[x:x+4]) - 1
             for x in (4, 12, 24)
         )
 
