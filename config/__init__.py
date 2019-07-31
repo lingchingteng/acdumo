@@ -61,7 +61,8 @@ ADMINS = ['anthony.aylward@gmail.com']
 APPROVED_EMAILS = [
     'anthony.aylward@gmail.com',
     'green.danying@gmail.com',
-    'craylward@gmail.com'
+    'craylward@gmail.com',
+    'elijahwaichunkun@gmail.com'
 ]
 '''
 
