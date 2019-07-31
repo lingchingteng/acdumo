@@ -127,7 +127,7 @@ def send_confirmation_email(user):
 
     token = user.get_confirm_email_token()
     send_email(
-        '[ucsd-bisb-unofficial] Confirm Your Email Address',
+        '[acdumo] Confirm Your Email Address',
         sender=current_app.config['ADMINS'][0],
         recipients=[user.email],
         text_body=render_template(
