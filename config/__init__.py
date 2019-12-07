@@ -57,7 +57,7 @@ MAIL_USE_TLS = False
 MAIL_USE_SSL = True
 MAIL_USERNAME = 'accelerated.dual.momentum@acdumo.info'
 MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-ADMINS = ['anthony.aylward@gmail.com']
+ADMINS = ['accelerated.dual.momentum@acdumo.info']
 APPROVED_EMAILS = [
     'anthony.aylward@gmail.com',
     'green.danying@gmail.com',
