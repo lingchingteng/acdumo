@@ -100,7 +100,7 @@ def index():
     )
     tickers = request.args.get('tickers', ' '.join(TICKERS)).split()
 
-    hpd = download_historical_price_data(date, *tickers)
+    hpd = download_historical_price_data(date, *tickers, freq='weekly')
     plot_prices(
         hpd,
         os.path.join(current_app.config['PROTECTED_DIR'], f"prices-{'-'.join(tickers)}-{date.strftime('%Y-%m-%d')}.svg")

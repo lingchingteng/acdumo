@@ -144,9 +144,9 @@ def compute_signal(df, freq: str = 'monthly'):
     if freq == 'monthly':
         return sum(df.adjclose[0] / df.adjclose[x] - 1 for x in (1, 3, 6))
     elif freq == 'weekly':
-        current_month_price = statistics.mean(df.adjclose[:4])
+        current_month_price = df.adjclose[0]
         return sum(
-            current_month_price / statistics.mean(df.adjclose[x:x+4]) - 1
+            current_month_price / df.adjclose[x] - 1
             for x in (4, 12, 24)
         )
 
