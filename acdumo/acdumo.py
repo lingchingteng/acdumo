@@ -126,7 +126,7 @@ def compute_one_month_return(df, freq: str = 'monthly'):
         return df.adjclose[0] / df.adjclose[1] - 1
     elif freq == 'weekly':
         return (
-            statistics.mean(df.adjclose[:4]) / statistics.mean(df.adjclose[4:8]) - 1
+            df.adjclose[0] / df.adjclose[4] - 1
         )
 
 
