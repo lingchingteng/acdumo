@@ -105,8 +105,8 @@ def index():
         hpd,
         os.path.join(current_app.config['PROTECTED_DIR'], f"prices-{'-'.join(tickers)}-{date.strftime('%Y-%m-%d')}.svg")
     )
-    returns = compute_one_month_returns(hpd)
-    signals = compute_signals(hpd)
+    returns = compute_one_month_returns(hpd, freq='weekly')
+    signals = compute_signals(hpd, freq='weekly')
     strategy = decide_strategy(signals, bonds=BONDS)
     formatted_date = date.strftime('%Y-%m-%d')
     for ticker, df in hpd.items():
