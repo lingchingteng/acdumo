@@ -67,6 +67,7 @@ class User(UserMixin, db.Model):
     email_confirmation_sent_on = db.Column(db.DateTime, nullable=True)
     email_confirmed = db.Column(db.Boolean, default=False, nullable=True)
     email_confirmed_on = db.Column(db.DateTime, nullable=True)
+    subscribed = db.Column(db.Boolean, default=False, nullable=True)
 
     def __repr__(self):
         """String representation of the user
