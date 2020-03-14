@@ -28,6 +28,7 @@
     <li><a href="{{ url_for('auth.login') }}">Log In</a>
     {% else %}
     <li><span>{{ current_user.username }}</span>
+    <li><a href="{{ url_for('settings.index') }}">Settings</a>
     <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
     {% endif %}
   </ul>

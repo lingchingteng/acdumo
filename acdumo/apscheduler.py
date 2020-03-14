@@ -1,7 +1,26 @@
 from flask_apscheduler import APScheduler
 from acdumo.email import send_notification_email
+from acdumo.acdumo import (
+    TICKERS, BONDS, download_historical_price_data,
+    compute_signals, decide_strategy, plot_prices
+)
 
 scheduler = APScheduler()
+
+REPORT = """Date
+====
+{date}
+
+Signals
+=======
+| Ticker | Signal |
+| ------ | ------ |
+{signals}
+
+Strategy
+========
+{strategy}
+"""
 
 @scheduler.task(
     'cron',
@@ -10,4 +29,22 @@ scheduler = APScheduler()
     misfire_grace_time=900
 )
 def notification_email():
-    send_notification_email()
+    hpd = download_historical_price_data(date, *TICKERS, freq='weekly')
+    signals = compute_signals(hpd, freq='weekly')
+    strategy = decide_strategy(signals, bonds=BONDS)
+    formatted_date = datetime.today().strftime('%Y-%m-%d')
+    signals_sans_bonds = dict((t, s) for t, s in signals.items() if t != bonds)
+    # if any(abs(signals[BONDS] - signals[s]) < 10 for s in signals_sans_bonds.keys()):
+    for user in User.query.all():
+        if user.subscribed:
+            send_notification_email(
+                user,
+                formatted_date,
+                REPORT.format(
+                    date=formatted_date,
+                    signals='\n'.join(
+                        f'|    {t} | {s*100:.4}% |' for t, s in signals.items()
+                    ),
+                    strategy=strategy
+                )
+            )

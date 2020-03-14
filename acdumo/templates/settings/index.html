@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block header %}
+  <h1>{% block title %}Settings{% endblock  title %}</h1>
+{% endblock %}
+
+{% block content %}
+<hr>
+<div class="content-login">
+  <p class="lead">You are {% if not_subscribed %}not{% endif %} subscribed to email alerts</p>
+  <form class="form-login" method="post">
+    {{ form.hidden_tag() }}
+    {{ form.submit(class_="btn btn-lg btn-outline-primary btn-block") }}
+  </form>
+</div>
+{% endblock %}

@@ -142,7 +142,8 @@ def send_confirmation_email(user):
         )
     )
 
-    def send_signal_notification_email(user):
+
+    def send_notification_email(user, date, report):
     """Send a password reset email
 
     An email with a signal update is sent
@@ -151,20 +152,24 @@ def send_confirmation_email(user):
     ----------
     user : User
         User to whom email will be sent
+    date
+        date for the report
+    report
+        report to send
     """
 
     send_email(
-        '[acdumo] Signal notification',
+        '[acdumo] signal notification',
         sender=current_app.config['ADMINS'][0],
         recipients=[user.email],
         text_body=render_template(
-            'email/reset_password.txt',
-            user=user,
-            token=token
+            'email/notification.txt',
+            date=date,
+            report=report
         ),
         html_body=render_template(
-            'email/reset_password.html',
-            user=user,
-            token=token
+            'email/notification.html',
+            date=date,
+            report=report
         )
     )
