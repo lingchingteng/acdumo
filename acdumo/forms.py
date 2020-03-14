@@ -126,3 +126,27 @@ class StrategyForm(FlaskForm):
     date = StringField('yyyy-mm-dd', default=datetime.today().strftime('%Y-%m-%d'))
     tickers = StringField('TK1 TK2 TK3...', default='SPY TLT VSS SCZ')
     submit = SubmitField('Submit')
+
+
+class SubscribeForm(FlaskForm):
+    """A form for email subscription
+
+    Attributes
+    ----------
+    tickers : StringField
+    submit : SubmitField
+    """
+    
+    tickers = StringField('TK1 TK2 TK3...', default='SPY TLT VSS SCZ')
+    submit = SubmitField('Subscribe')
+
+
+class UnsubscribeForm(FlaskForm):
+    """A form for email subscription
+
+    Attributes
+    ----------
+    submit : SubmitField
+    """
+
+    submit = SubmitField('Unsubscribe')
