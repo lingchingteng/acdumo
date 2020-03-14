@@ -21,6 +21,7 @@ setuptools.setup(
     ],
     install_requires = [
         'flask',
+        'flask-apscheduler',
         'flask-login',
         'flask-mail',
         'flask-migrate',
