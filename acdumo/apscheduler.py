@@ -44,17 +44,19 @@ def notification_email():
     formatted_date = datetime.today().strftime('%Y-%m-%d')
     signals_sans_bonds = dict((t, s) for t, s in signals.items() if t != BONDS)
     # if any(abs(signals[BONDS] - signals[s]) < 10 for s in signals_sans_bonds.keys()) or (strategy != strategy_yesterday):
-    db = get_db()
-    for user in User.query.all():
-        if user.subscribed:
-            send_notification_email(
-                user,
-                formatted_date,
-                REPORT.format(
-                    date=formatted_date,
-                    signals='\n'.join(
-                        f'|    {t} | {s*100:.4}% |' for t, s in signals.items()
-                    ),
-                    strategy=strategy
+    app = create_app()
+    with app.app_context():
+        db = get_db()
+        for user in User.query.all():
+            if user.subscribed:
+                send_notification_email(
+                    user,
+                    formatted_date,
+                    REPORT.format(
+                        date=formatted_date,
+                        signals='\n'.join(
+                            f'|    {t} | {s*100:.4}% |' for t, s in signals.items()
+                        ),
+                        strategy=strategy
+                    )
                 )
-            )
