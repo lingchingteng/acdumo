@@ -144,7 +144,7 @@ def send_confirmation_email(user):
 
 
     def send_notification_email(user, date, report):
-    """Send a password reset email
+    """Send a notification email
 
     An email with a signal update is sent
 
