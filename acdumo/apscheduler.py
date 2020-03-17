@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from flask_apscheduler import APScheduler
 from acdumo.email import send_notification_email
+from acdumo.models import User
 from acdumo.acdumo import (
     TICKERS, BONDS, download_historical_price_data,
     compute_signals, decide_strategy, plot_prices
