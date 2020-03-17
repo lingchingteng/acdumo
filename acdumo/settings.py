@@ -42,7 +42,6 @@ bp = Blueprint('settings', __name__, url_prefix='/settings')
 
 @bp.route('/index', methods=('GET', 'POST'))
 @login_required
-@named_permission.require(http_exception=403)
 def index():
     """Render the settings index"""
     
