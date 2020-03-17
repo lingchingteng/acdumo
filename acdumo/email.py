@@ -143,7 +143,7 @@ def send_confirmation_email(user):
     )
 
 
-def send_notification_email(user, date, report):
+def send_notification_email(user, date, report, alert):
     """Send a password reset email
 
     An email with a signal update is sent
@@ -165,11 +165,13 @@ def send_notification_email(user, date, report):
         text_body=render_template(
             'email/notification.txt',
             date=date,
-            report=report
+            report=report,
+            alert=alert
         ),
         html_body=render_template(
             'email/notification.html',
             date=date,
-            report=report
+            report=report,
+            alert=alert
         )
     )
