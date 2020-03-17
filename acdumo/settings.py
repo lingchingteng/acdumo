@@ -25,9 +25,8 @@ from flask import (
 from flask_login import current_user, login_required
 from werkzeug.exceptions import abort
 
-from ucsd_bisb_unofficial.principals import named_permission
-from ucsd_bisb_unofficial.models import get_db, User
-from ucsd_bisb_unofficial.forms import SubscribeForm, UnsubscribeForm
+from acdumo.models import get_db, User
+from acdumo.forms import SubscribeForm, UnsubscribeForm
 
 
 
@@ -43,7 +42,6 @@ bp = Blueprint('settings', __name__, url_prefix='/settings')
 
 @bp.route('/index', methods=('GET', 'POST'))
 @login_required
-@named_permission.require(http_exception=403)
 def index():
     """Render the settings index"""
     
