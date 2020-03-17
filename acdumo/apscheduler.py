@@ -42,6 +42,7 @@ def notification_email():
     formatted_date = datetime.today().strftime('%Y-%m-%d')
     signals_sans_bonds = dict((t, s) for t, s in signals.items() if t != BONDS)
     # if any(abs(signals[BONDS] - signals[s]) < 10 for s in signals_sans_bonds.keys()) or (strategy != strategy_yesterday):
+    db = get_db()
     for user in User.query.all():
         if user.subscribed:
             send_notification_email(
