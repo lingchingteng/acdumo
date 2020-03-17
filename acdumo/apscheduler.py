@@ -44,7 +44,7 @@ def notification_email():
     formatted_date = datetime.today().strftime('%Y-%m-%d')
     signals_sans_bonds = dict((t, s) for t, s in signals.items() if t != BONDS)
     # if any(abs(signals[BONDS] - signals[s]) < 10 for s in signals_sans_bonds.keys()) or (strategy != strategy_yesterday):
-    app = create_app()
+    app = create_app(configure_scheduler=False)
     with app.app_context():
         db = get_db()
         for user in User.query.all():

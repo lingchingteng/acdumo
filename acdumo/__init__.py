@@ -22,7 +22,7 @@ from flask_login import login_required
 
 # Functions ====================================================================
 
-def create_app(test_config=None):
+def create_app(test_config=None, configure_scheduler=True):
     """The application factory function
 
     This function creates and configures the Flask application object. For
@@ -66,12 +66,15 @@ def create_app(test_config=None):
     from acdumo.email import mail
     from acdumo.errors import forbidden
     from acdumo.misaka import md
-    from acdumo.apscheduler import scheduler
-    for ext in db, login, mail, md, scheduler:
+    for ext in db, login, mail, md:
         ext.init_app(app)
     migrate.init_app(app, db)
     login.login_view = 'auth.login'
-    scheduler.start()
+
+    if configure_scheduler:
+        from acdumo.apscheduler import scheduler
+        scheduler.init_app(app)
+        scheduler.start()
 
     for error, handler in ((403, forbidden),):
         app.register_error_handler(403, forbidden)
