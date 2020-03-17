@@ -39,7 +39,7 @@ def notification_email():
     signals = compute_signals(hpd, freq='weekly')
     strategy = decide_strategy(signals, bonds=BONDS)
     formatted_date = datetime.today().strftime('%Y-%m-%d')
-    signals_sans_bonds = dict((t, s) for t, s in signals.items() if t != bonds)
+    signals_sans_bonds = dict((t, s) for t, s in signals.items() if t != BONDS)
     # if any(abs(signals[BONDS] - signals[s]) < 10 for s in signals_sans_bonds.keys()) or (strategy != strategy_yesterday):
     for user in User.query.all():
         if user.subscribed:
