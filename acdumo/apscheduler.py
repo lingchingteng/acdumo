@@ -1,5 +1,7 @@
+from flask import g
 from datetime import datetime, timedelta
 from flask_apscheduler import APScheduler
+from acdumo import create_app
 from acdumo.email import send_notification_email
 from acdumo.models import get_db, User
 from acdumo.acdumo import (

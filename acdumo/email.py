@@ -16,7 +16,7 @@ mail : Mail
 
 # Imports ======================================================================
 
-from flask import render_template, current_app, g
+from flask import render_template, current_app
 from flask_mail import Mail, Message
 from threading import Thread
 
