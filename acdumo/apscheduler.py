@@ -30,6 +30,7 @@ Strategy
 @scheduler.task(
     'cron',
     id='send_notification_email',
+    day_of_week='mon,tue,wed,thu,fri',
     hour='7',
     misfire_grace_time=900
 )
@@ -51,8 +52,6 @@ def notification_email():
             'A stocks signal is within 10% of the bonds signal, so a '
             'strategy change may occur soon.'
         )
-    else:
-        alert = 'Test alert'
     if alert is not None:
         app = create_app(configure_scheduler=False)
         with app.app_context():
