@@ -36,8 +36,8 @@ MAIL_USE_TLS = True
 MAIL_USE_SSL = False
 MAIL_USERNAME = ''
 MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-ADMINS = ['anthony.aylward@gmail.com']
-APPROVED_EMAILS = ['anthony.aylward@gmail.com']
+ADMINS = ['anthony.aylward@protonmail.com']
+APPROVED_EMAILS = ['anthony.aylward@protonmail.com']
 '''
 
 PRODUCTION_CONFIG_DATA = f'''
@@ -59,7 +59,7 @@ MAIL_USERNAME = 'accelerated.dual.momentum@acdumo.info'
 MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 ADMINS = ['accelerated.dual.momentum@acdumo.info']
 APPROVED_EMAILS = [
-    'anthony.aylward@gmail.com',
+    'anthony.aylward@protonmail.com',
     'green.danying@gmail.com',
     'craylward@gmail.com',
     'elijahwaichunkun@gmail.com'
