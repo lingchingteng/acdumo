@@ -41,7 +41,7 @@ source venv/bin/activate
 pip3 install -e . # if on macOS, also run: python3 acdumo/install_certifi.py
 export FLASK_APP=acdumo
 export FLASK_ENV=development
-mkdir instance
+mkdir -p instance/protected
 python3 config/__init__.py instance/
 flask db upgrade
 flask run
