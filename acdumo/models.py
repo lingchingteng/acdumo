@@ -127,7 +127,6 @@ class User(UserMixin, db.Model):
                 current_app.config['SECRET_KEY'],
                 algorithm='HS256'
             )
-            .decode('utf-8')
         )
     
     @staticmethod
