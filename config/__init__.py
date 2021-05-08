@@ -85,7 +85,6 @@ def parse_arguments():
         '--email',
         help='email address for development'
     )
-    return parser.parse_args()
     parser.add_argument(
         '--production',
         action='store_true',
