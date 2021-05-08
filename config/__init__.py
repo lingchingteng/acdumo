@@ -97,7 +97,7 @@ def main():
     with open(os.path.join(args.instance, 'config.py'), 'w') as f:
         f.write(
             PRODUCTION_CONFIG_DATA if args.production
-            else DEVELOPMENT_CONFIG_DATA.format(args.email)
+            else DEVELOPMENT_CONFIG_DATA.format(email=args.email)
         )
 
 
