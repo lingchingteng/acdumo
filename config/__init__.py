@@ -62,7 +62,8 @@ APPROVED_EMAILS = [
     'anthony.aylward@protonmail.com',
     'green.danying@gmail.com',
     'craylward@gmail.com',
-    'elijahwaichunkun@gmail.com'
+    'elijahwaichunkun@gmail.com',
+    'work@lbry.com'
 ]
 '''
 
