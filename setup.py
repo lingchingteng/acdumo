@@ -32,6 +32,7 @@ setuptools.setup(
         'misaka',
         'pandas',
         'seaborn',
+        'wtforms',
         'yahoofinancials',
     ],
     entry_points = {
