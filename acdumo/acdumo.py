@@ -103,7 +103,7 @@ def plot_prices(historical_price_data: dict, file_name: str):
     )
     ax = sns.lineplot(
         x='formatted_date',
-        y='normalized_adjclose_rev',
+        y='normalized_adjclose',
         hue='ticker',
         data=hpd
     )
