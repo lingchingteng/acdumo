@@ -38,7 +38,7 @@ git clone https://github.com/anthony-aylward/acdumo.git
 cd acdumo
 python3 -m venv venv
 source venv/bin/activate
-pip3 install -e .
+pip3 install -e . # if on macOS, also run: python3 acdumo/install_certifi.py
 export FLASK_APP=acdumo
 export FLASK_ENV=development
 mkdir instance

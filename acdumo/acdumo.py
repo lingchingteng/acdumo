@@ -4,6 +4,7 @@
 
 # Imports ======================================================================
 
+import matplotlib; matplotlib.use('agg')
 import misaka as m
 import os
 import pandas as pd
