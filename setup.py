@@ -20,7 +20,7 @@ setuptools.setup(
         'Operating System :: OS Independent',
     ],
     install_requires = [
-        'email_validator',
+        'email-validator',
         'flask',
         'flask-apscheduler',
         'flask-login',
