@@ -36,8 +36,8 @@ MAIL_USE_TLS = True
 MAIL_USE_SSL = False
 MAIL_USERNAME = ''
 MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-ADMINS = [{{email}}]
-APPROVED_EMAILS = [{{email}}]
+ADMINS = ['{{email}}']
+APPROVED_EMAILS = ['{{email}}']
 '''
 
 PRODUCTION_CONFIG_DATA = f'''
