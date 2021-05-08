@@ -86,7 +86,7 @@ def download_historical_price_data(date, *tickers, freq: str = 'monthly'):
                     d.endswith('-01') if freq == 'monthly' else True
                     for d in df.formatted_date
                 ]
-            ][::-1]
+            ]
             .reset_index().dropna()
         )
         for ticker, df in zip(tickers, dfs)
@@ -96,7 +96,7 @@ def download_historical_price_data(date, *tickers, freq: str = 'monthly'):
 def plot_prices(historical_price_data: dict, file_name: str):
     hpd = pd.concat(
         df.assign(
-            normalized_adjclose=df.adjclose / df.adjclose.iloc[0],
+            normalized_adjclose=df.adjclose / df.adjclose.iloc[-1],
             ticker=[ticker] * len(df.index)
         )[['formatted_date', 'normalized_adjclose', 'ticker']]
         for ticker, df in historical_price_data.items()
@@ -105,10 +105,10 @@ def plot_prices(historical_price_data: dict, file_name: str):
         x='formatted_date',
         y='normalized_adjclose',
         hue='ticker',
-        data=hpd
+        data=hpd[::-1]
     )
     ax.set_xlabel('')
-    ax.set_ylabel(f'adjclose relative to {hpd.formatted_date.iloc[0]}')
+    ax.set_ylabel(f'adjclose relative to {hpd.formatted_date.iloc[-1]}')
     ax.set_xticklabels(labels=hpd.formatted_date, rotation=30, ha='right')
     if len(ax.get_xticklabels()) > 8:
         for ind, label in enumerate(ax.get_xticklabels()):
