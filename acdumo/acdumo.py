@@ -97,13 +97,14 @@ def plot_prices(historical_price_data: dict, file_name: str):
     hpd = pd.concat(
         df.assign(
             normalized_adjclose=df.adjclose / df.adjclose.iloc[-1],
+            normalized_adjclose_rev=rev(df.adjclose / df.adjclose.iloc[-1]),
             ticker=[ticker] * len(df.index)
         )[['formatted_date', 'normalized_adjclose', 'ticker']]
         for ticker, df in historical_price_data.items()
     )
     ax = sns.lineplot(
         x='formatted_date',
-        y='normalized_adjclose',
+        y='normalized_adjclose_rev',
         hue='ticker',
         data=hpd
     )
