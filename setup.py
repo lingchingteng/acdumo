@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='acdumo',
-    version='1.0.20',
+    version='1.0.22',
     author='Anthony Aylward, Serena Wu, Elijah Kun',
     author_email='aaylward@eng.ucsd.edu',
     description='Accelerated dual momentum',
@@ -20,6 +20,7 @@ setuptools.setup(
         'Operating System :: OS Independent',
     ],
     install_requires = [
+        'email_validator',
         'flask',
         'flask-apscheduler',
         'flask-login',

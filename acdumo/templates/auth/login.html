@@ -4,6 +4,13 @@
 
 {% block content %}
 <div class="content-login">
+  <p class="lead">
+    This app is a simple implementation of the <a href="https://engineeredportfolio.com/2018/05/02/accelerating-dual-momentum-investing/">Accelerated Dual Momentum</a>
+    investment strategy. It queries a Yahoo Finance API for historical ticker
+    price data, calculates ADM statistics, and suggests a strategy.
+  </p>
+</div>
+<div class="content-login">
   <form class="form-login" method="post">
     {{ form.hidden_tag() }}
     {{
