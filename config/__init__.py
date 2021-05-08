@@ -36,8 +36,8 @@ MAIL_USE_TLS = True
 MAIL_USE_SSL = False
 MAIL_USERNAME = ''
 MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-ADMINS = ['anthony.aylward@protonmail.com']
-APPROVED_EMAILS = ['anthony.aylward@protonmail.com']
+ADMINS = [{{email}}]
+APPROVED_EMAILS = [{{email}}]
 '''
 
 PRODUCTION_CONFIG_DATA = f'''
@@ -82,6 +82,11 @@ def parse_arguments():
         help='path to instance folder'
     )
     parser.add_argument(
+        '--email',
+        help='email address for development'
+    )
+    return parser.parse_args()
+    parser.add_argument(
         '--production',
         action='store_true',
         help='write a production config file'
@@ -93,7 +98,7 @@ def main():
     with open(os.path.join(args.instance, 'config.py'), 'w') as f:
         f.write(
             PRODUCTION_CONFIG_DATA if args.production
-            else DEVELOPMENT_CONFIG_DATA
+            else DEVELOPMENT_CONFIG_DATA.format(args.email)
         )
 
 
