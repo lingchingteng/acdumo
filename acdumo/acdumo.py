@@ -99,7 +99,7 @@ def plot_prices(historical_price_data: dict, file_name: str):
             normalized_adjclose=df.adjclose / df.adjclose.iloc[-1],
             normalized_adjclose_rev=tuple(df.adjclose / df.adjclose.iloc[-1])[::-1],
             ticker=[ticker] * len(df.index)
-        )[['formatted_date', 'normalized_adjclose', 'ticker']]
+        )[['formatted_date', 'normalized_adjclose', 'normalized_adjclose_rev', 'ticker']]
         for ticker, df in historical_price_data.items()
     )
     ax = sns.lineplot(
