@@ -73,6 +73,7 @@ export FLASK_APP=acdumo
 export FLASK_ENV=development
 mkdir -p instance/protected
 python3 config/__init__.py --email <gmail address> instance/
+export MAIL_PASSWORD=<gmail password>
 flask db upgrade
 flask run
 ```
