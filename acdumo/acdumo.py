@@ -182,7 +182,7 @@ def generate_report(date, returns: dict, signals: dict, strategy: str):
 
 
 def parse_arguments():
-    parser = ArgumentParser(description='Accelerated dual momentum')
+    parser = ArgumentParser(description='Accelerated Dual Momentum')
     parser.add_argument(
         'report_dir',
         metavar='<path/to/report/dir/>',
